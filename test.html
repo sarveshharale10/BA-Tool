@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <title>neo4jd3.js</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/fontawesome.min.css">
+        <link rel="stylesheet" href="css/neo4jd3.min.css?v=0.0.1">
+        <style>
+            body,
+            html,
+            .neo4jd3 {
+                height: 100%;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <input type="text" id="tx_hash" name="tx_hash" />
+        <input type="button" value="Search" onclick="get_data()"/>
+        <div id="neo4jd3"></div>
+        <!-- Scripts -->
+        <script src="js/d3.min.js"></script>
+        <script src="js/neo4jd3.js?v=0.0.1"></script>
+        <script src="js/jquery.js"></script>
+        <script type="text/javascript">
+
+            function get_data(){
+                tx_hash = $("#tx_hash").val();
+                $.ajax({
+                    method:"GET",
+                    url:"http://localhost:8000/track/" + tx_hash + "/2",
+                    success:function(result){
+                        data = {
+                            "results":[{
+                                "data":[{"graph":result}]
+                            }],
+                            "errors":[]
+                        }
+                        var neo4jd3 = new Neo4jd3('#neo4jd3', {
+                            minCollision: 60,
+                            neo4jData:data,
+                            nodeRadius: 25,
+                            zoomFit: false
+                        });
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>
