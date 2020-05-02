@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from flask import Flask,jsonify, render_template
+from flask import Flask,jsonify, render_template, request, redirect
 from track_trace import Tracker,Tracer
 import string
 import random
@@ -163,8 +163,11 @@ def convert_result_to_cluster(responses):
 	return convert_result_to_json("",responses)
 
 
-@app.route("/transaction/<tx_hash>",methods=['GET'])
-def get_transaction(tx_hash):
+@app.route("/transaction",methods=['GET','POST'])
+def get_transaction():
+	if request.method == 'GET':
+		return render_template('search.html')
+	tx_hash = request.form['tx_hash']
 	db = app.config["db"]
 	transactions = db["transactions"]
 
@@ -178,12 +181,15 @@ def get_transaction(tx_hash):
 		response["outputs"] = row["outputs"]
 		responses.append(response)
 
-	return convert_result_to_json(responses)
+	return convert_result_to_json("",responses)
 
 	
 
-@app.route("/address/<address>",methods=['GET'])
-def get_address(address):
+@app.route("/address",methods=['GET','POST'])
+def get_address():
+	if request.method == 'GET':
+		return render_template('search.html')
+	address = request.form['address']
 	db = app.config["db"]
 	transactions = db["transactions"]
 
@@ -197,10 +203,15 @@ def get_address(address):
 		response["outputs"] = row["outputs"]
 		responses.append(response)
 
-	return convert_result_to_json(responses)
+	return convert_result_to_json("",responses)
 
-@app.route("/track/<address>/<hop_count>",methods=['GET'])
-def track(address,hop_count):
+@app.route("/track",methods=['GET','POST'])
+def track():
+	if request.method == 'GET':
+		return render_template('track.html')
+	address = request.form['address']
+	hop_count = request.form['hop_count']
+
 	db = app.config["db"]
 	transactions = db["transactions"]
 
@@ -223,8 +234,12 @@ def track(address,hop_count):
 
 	return convert_result_to_json(address,responses)
 
-@app.route("/trace/<address>/<hop_count>",methods=['GET'])
-def trace(address,hop_count):
+@app.route("/trace", methods=['GET','POST'])
+def trace():
+	if request.method == 'GET':
+		return render_template('trace.html')
+	address = request.form['address']
+	hop_count = request.form['hop_count']
 	db = app.config["db"]
 	transactions = db["transactions"]
 
@@ -246,9 +261,17 @@ def trace(address,hop_count):
 				responses.append(response)
 
 	return convert_result_to_json(address,responses)
+
 @app.route("/", methods=['GET'])
 def home():
+	return redirect("/home")
+
+@app.route("/home", methods=['GET','POST'])
+def dashboard():
 	return render_template("index.html")
+@app.route("/alert", methods=['GET','POST'])
+def alert():
+	return render_template("alert.html")
 
 @app.after_request
 def add_header(r):
