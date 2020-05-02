@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from flask import Flask,jsonify
+from flask import Flask,jsonify, render_template
 from track_trace import Tracker,Tracer
 import string
 import random
@@ -246,10 +246,17 @@ def trace(address,hop_count):
 				responses.append(response)
 
 	return convert_result_to_json(address,responses)
+@app.route("/", methods=['GET'])
+def home():
+	return render_template("index.html")
 
 @app.after_request
 def add_header(r):
     r.headers["Access-Control-Allow-Origin"] = "*"
     return r
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 
 #transactions.find({$or:[{"outputs":{$elemMatch:{"address":"1FijBR5s3EU1JS3UokzTZbkAibgL4SXzxm"}}},{"inputs":{$elemMatch:{"address":"1FijBR5s3EU1JS3UokzTZbkAibgL4SXzxm"}}}]}).count();
