@@ -822,8 +822,6 @@ function Neo4jD3(_selector, _options) {
     function toString(d) {
         var s = d.labels ? d.labels[0] : d.type;
 
-        s += ' (<id>: ' + d.id;
-
         Object.keys(d.properties).forEach(function(property) {
             s += ', ' + property + ': ' + JSON.stringify(d.properties[property]);
         });
@@ -866,8 +864,6 @@ function Neo4jD3(_selector, _options) {
         } else {
             appendInfoElementRelationship('class', d.type);
         }
-
-        appendInfoElementProperty('property', '&lt;id&gt;', d.id);
 
         Object.keys(d.properties).forEach(function(property) {
             appendInfoElementProperty('property', property, JSON.stringify(d.properties[property]));

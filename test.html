@@ -22,16 +22,19 @@
         <input type="button" value="Search" onclick="get_data()"/>
         <div id="neo4jd3"></div>
         <!-- Scripts -->
-        <script src="js/d3.min.js"></script>
-        <script src="js/neo4jd3.js?v=0.0.1"></script>
-        <script src="js/jquery.js"></script>
+        <script src="static/js/d3.min.js"></script>
+        <script src="static/js/neo4jd3.js?v=0.0.1"></script>
+        <script src="static/js/jquery.js"></script>
         <script type="text/javascript">
 
             function get_data(){
                 tx_hash = $("#tx_hash").val();
                 $.ajax({
-                    method:"GET",
-                    url:"http://localhost:8000/track/" + tx_hash + "/2",
+                    method:"POST",
+                    url:"http://localhost:5000/address",
+                    data:{
+                        "address":$("#tx_hash").val()
+                    },
                     success:function(result){
                         data = {
                             "results":[{

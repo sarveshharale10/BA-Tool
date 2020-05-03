@@ -189,7 +189,7 @@ def get_transaction():
 def get_address():
 	if request.method == 'GET':
 		return render_template('search.html')
-	address = request.form['address']
+	address = request.values['address']
 	db = app.config["db"]
 	transactions = db["transactions"]
 
@@ -203,14 +203,14 @@ def get_address():
 		response["outputs"] = row["outputs"]
 		responses.append(response)
 
-	return convert_result_to_json("",responses)
+	return convert_result_to_cluster(responses)
 
 @app.route("/track",methods=['GET','POST'])
 def track():
 	if request.method == 'GET':
 		return render_template('track.html')
-	address = request.form['address']
-	hop_count = request.form['hop_count']
+	address = request.values['address']
+	hop_count = request.values['hop_count']
 
 	db = app.config["db"]
 	transactions = db["transactions"]
@@ -232,7 +232,7 @@ def track():
 				response["depth"] = key
 				responses.append(response)
 
-	return convert_result_to_json(address,responses)
+	return convert_result_to_cluster(responses)
 
 @app.route("/trace", methods=['GET','POST'])
 def trace():
@@ -269,6 +269,8 @@ def home():
 @app.route("/home", methods=['GET','POST'])
 def dashboard():
 	return render_template("index.html")
+
+
 @app.route("/alert", methods=['GET','POST'])
 def alert():
 	return render_template("alert.html")

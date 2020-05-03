@@ -1,11 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<section class="wrapper">
-    <h2 class="">
-        Trace
-    </h2>
-    <!-- INLINE FORM ELELEMNTS -->
     <div class="row mt">
         <div class="col-lg-12">
             <div class="form-panel">
@@ -24,8 +19,8 @@
             </div>
             <!-- /form-panel -->
         </div>
-        <!-- /col-lg-12 -->
-        <div id="neo4jd3"></div>
+    </div>
+        <div id="neo4jd3" style="height:100%; width:100%;"></div>
         <!-- Scripts -->
         <script src="static/js/d3.min.js"></script>
         <script src="static/js/neo4jd3.js?v=0.0.1"></script>
@@ -37,16 +32,11 @@
                 /* stop form from submitting normally */
                 event.preventDefault();
 
-                /* get the action attribute from the <form action=""> element */
-                var form = $(this), url = '/trace';
+                url = '/trace';
 
-                /* Send the data using post with element id name and name2*/
                 var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val()});
-                alert('Sending request');
                 /* Alerts the results */
                 posting.done(function (result) {
-                    alert('success');
-                    console.log(result);
                     data = {
                         "results": [{
                             "data": [{ "graph": result }]
@@ -62,33 +52,7 @@
                 });
             });
 
-            function get_data() {
-                tx_hash = $("#tx_hash").val();
-                $.ajax({
-                    method: "POST",
-                    url: "/transaction",
-
-                    success: function (result) {
-                        data = {
-                            "results": [{
-                                "data": [{ "graph": result }]
-                            }],
-                            "errors": []
-                        }
-                        var neo4jd3 = new Neo4jd3('#neo4jd3', {
-                            minCollision: 60,
-                            neo4jData: data,
-                            nodeRadius: 25,
-                            zoomFit: false
-                        });
-                    }
-                });
-            }
         </script>
-    </div>
-    <!-- /row -->
-
-</section>
 {% endblock content %}
 {% block scripts %}
 {% endblock scripts %}

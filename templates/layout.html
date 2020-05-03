@@ -24,6 +24,18 @@
     <link href="static/css/style-responsive.css" rel="stylesheet">
     <script src="static/lib/chart-master/Chart.js"></script>
 
+     <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.min.css">
+    <link rel="stylesheet" href="static/css/neo4jd3.min.css?v=0.0.1">
+    <style>
+        body,
+        html,
+        .neo4jd3 {
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+
     <!-- =======================================================
     Template Name: Dashio
     Template URL: https://templatemag.com/dashio-bootstrap-admin-template/
@@ -33,7 +45,7 @@
 </head>
 
 <body>
-    <section id="container">
+    <section id="container" style="height:100%;">
         <!-- **********************************************************************************************************************************************************
         TOP BAR CONTENT & NOTIFICATIONS
         *********************************************************************************************************************************************************** -->
@@ -109,37 +121,15 @@
         MAIN CONTENT
         *********************************************************************************************************************************************************** -->
         <!--main content start-->
-        <section id="main-content">
+        <section id="main-content" style="height: 100%;">
             {% block content %}
             {% endblock %}
         </section>
         <!--main content end-->
-        <!--footer start-->
-        <footer class="site-footer">
-            <div class="text-center">
-                <p>
-                    &copy; Copyrights <strong>Dashio</strong>. All Rights Reserved
-                </p>
-                <div class="credits">
-                    <!--
-            You are NOT allowed to delete the credit link to TemplateMag with free version.
-            You can delete the credit link only if you bought the pro version.
-            Buy the pro version with working PHP/AJAX contact form: https://templatemag.com/dashio-bootstrap-admin-template/
-            Licensing information: https://templatemag.com/license/
-          -->
-                    Created with Dashio template by <a href="https://templatemag.com/">TemplateMag</a>
-                </div>
-                <a href="/" class="go-top">
-                    <i class="fa fa-angle-up"></i>
-                </a>
-            </div>
-        </footer>
-        <!--footer end-->
     </section>
     <!-- js placed at the end of the document so the pages load faster -->
     {% block scripts %}
     {% endblock %}
-    <script src="static/lib/jquery/jquery.min.js"></script>
 
     <script src="static/lib/bootstrap/js/bootstrap.min.js"></script>
     <script class="include" type="text/javascript" src="static/lib/jquery.dcjqaccordion.2.7.js"></script>
