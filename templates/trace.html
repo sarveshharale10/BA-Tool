@@ -1,6 +1,7 @@
-{% extends "layout.html" %}
+{% extends "layout_graph.html" %}
 
 {% block content %}
+<section class="wrapper" style="height:100%;">
     <div class="row mt">
         <div class="col-lg-12">
             <div class="form-panel">
@@ -9,50 +10,58 @@
                     <div class="form-group">
                         <label class="sr-only" for="exampleInputEmail2">Address</label>
                         <input type="text" class="form-control" id="address" placeholder="Enter Address">
-                    </div>
+                    </div>&nbsp&nbsp&nbsp
                     <div class="form-group">
                         <label class="sr-only" for="exampleInputPassword2">Hop Count</label>
                         <input type="text" class="form-control" id="hop_count" placeholder="Enter Hop Count">
-                    </div>
+                    </div>&nbsp&nbsp&nbsp
                     <button type="submit" class="btn btn-theme"> Generate Graph </button>
                 </form>
             </div>
             <!-- /form-panel -->
         </div>
     </div>
-        <div id="neo4jd3" style="height:100%; width:100%;"></div>
-        <!-- Scripts -->
-        <script src="static/js/d3.min.js"></script>
-        <script src="static/js/neo4jd3.js?v=0.0.1"></script>
-        <script src="static/js/jquery.js"></script>
-        <script type='text/javascript'>
-            /* attach a submit handler to the form */
-            $("#graph").submit(function (event) {
+    <div class="row mt">
+        <div class="col-lg-12">
+            <div id="display-graph" class="form-panel form"
+                style="display: none; position: relative; height:55vh; padding: 2.5vh;">
+                <div class="col-lg-12" id="neo4jd3"
+                    style="height: 50vh; box-sizing: border-box; width: inherit; z-index: inherit;"></div>
+            </div>
+        </div>
+    </div>    <!-- Scripts -->
+    <script src="static/js/d3.min.js"></script>
+    <script src="static/js/neo4jd3.js?v=0.0.1"></script>
+    <script src="static/js/jquery.js"></script>
+    <script type='text/javascript'>
+        /* attach a submit handler to the form */
+        $("#graph").submit(function (event) {
 
-                /* stop form from submitting normally */
-                event.preventDefault();
+            /* stop form from submitting normally */
+            event.preventDefault();
 
-                url = '/trace';
+            url = '/trace';
 
-                var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val()});
-                /* Alerts the results */
-                posting.done(function (result) {
-                    data = {
-                        "results": [{
-                            "data": [{ "graph": result }]
-                        }],
-                        "errors": []
-                    }
-                    var neo4jd3 = new Neo4jd3('#neo4jd3', {
-                        minCollision: 60,
-                        neo4jData: data,
-                        nodeRadius: 25,
-                        zoomFit: false
-                    });
+            var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val() });
+            /* Alerts the results */
+            posting.done(function (result) {
+                data = {
+                    "results": [{
+                        "data": [{ "graph": result }]
+                    }],
+                    "errors": []
+                }
+                var neo4jd3 = new Neo4jd3('#neo4jd3', {
+                    minCollision: 60,
+                    neo4jData: data,
+                    nodeRadius: 25,
+                    zoomFit: false
                 });
             });
+        });
 
-        </script>
+    </script>
+</section>
 {% endblock content %}
 {% block scripts %}
 {% endblock scripts %}
