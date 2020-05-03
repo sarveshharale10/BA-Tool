@@ -231,7 +231,6 @@ def track():
 				response["outputs"] = row["outputs"]
 				response["depth"] = key
 				responses.append(response)
-
 	return convert_result_to_cluster(responses)
 
 @app.route("/trace", methods=['GET','POST'])

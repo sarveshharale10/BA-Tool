@@ -56,6 +56,14 @@
                     }],
                     "errors": []
                 }
+                if ((result['nodes'].length) > 0) {
+                    $('#display-graph').css('display', 'block');
+                    console.log(result['nodes']);
+                }
+                else {
+                    $('#display-graph').css('display', 'none');
+                    alert('No resut found.')
+                }
                 var neo4jd3 = new Neo4jd3('#neo4jd3', {
                     minCollision: 60,
                     neo4jData: data,
