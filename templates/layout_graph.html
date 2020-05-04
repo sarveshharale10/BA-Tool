@@ -28,6 +28,26 @@
     <!-- <link rel="stylesheet" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/fontawesome.min.css"> -->
     <style>
+        .fullscreen {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background-color: #eeeeee;
+            border: #ccc solid 3px;
+            border-radius: 20px;
+            font-size: 20px;
+            padding: 1rem;
+        }
+
+        .fullscreen:hover {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background-color: #d7d7d7ee;
+            font-size: 20px;
+            padding: 1rem;
+        }
+
         .switch {
             position: relative;
             display: inline-block;
@@ -65,7 +85,7 @@
             transition: .4s;
         }
 
-        .slider-label{
+        .slider-label {
             vertical-align: center;
         }
 
@@ -90,6 +110,26 @@
 
         .slider.round:before {
             border-radius: 50%;
+        }
+
+        #display-graph-fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            margin: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 10000 !important;
+            padding: 2vw !important;
+
+        }
+
+        .neo4jd3-fullscreen {
+            position:absolute !important;
+            margin:auto !important;
+            width:96vw !important;
+            height:95vh !important;
+
         }
     </style>
     <!-- =======================================================
@@ -280,36 +320,29 @@
     <script src="static/lib/zabuto_calendar.js"></script>
     <script type="text/javascript">
 
+        $('.fullscreen').click(function () {
+            if ($('#display-graph-fullscreen').css('position') == 'fixed') {
+                $('#display-graph-fullscreen').attr('id', 'display-graph');
+                $('#neo4jd3').removeClass('neo4jd3-fullscreen');
+                $('#fullscreen-btn').removeClass('fa-compress');
+                $('#fullscreen-btn').addClass('fa-expand');
+                // $('.fullscreen').css('z-index', '20000');
 
-        //   x.forEach(function(item){
-        //       console.log(item);
-        //   });
+            } else {
+                console.log($("#display-graph").attr('style'));
 
-
-        // $(document).ready(function () {
-
-
+                $('#display-graph').attr('id', 'display-graph-fullscreen');
+                $('#neo4jd3').addClass('neo4jd3-fullscreen')
 
 
 
+                $('#fullscreen-btn').removeClass('fa-expand');
+                $('#fullscreen-btn').addClass('fa-compress');
+                $('.fullscreen').css('z-index', '20000');
+                console.log('Expanded')
 
-        //     var unique_id = $.gritter.add({
-        //         // (string | mandatory) the heading of the notification
-        //         title: 'Welcome to Dashio!',
-        //         // (string | mandatory) the text inside the notification
-        //         text: 'Hover me to enable the Close Button. You can hide the left sidebar clicking on the button next to the logo.',
-        //         // (string | optional) the image to display on the left
-        //         image: 'static/img/ui-sam.jpg',
-        //         // (bool | optional) if you want it to fade out on its own or just sit there
-        //         sticky: false,
-        //         // (int | optional) the time you want it to be alive for before fading out
-        //         time: 8000,
-        //         // (string | optional) the class name you want to apply to that specific message
-        //         class_name: 'my-sticky-class'
-        //     });
-
-        //     return false;
-        // });
+            }
+        })
     </script>
     <script type="application/javascript">
         $(document).ready(function () {
