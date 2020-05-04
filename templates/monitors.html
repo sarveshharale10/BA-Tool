@@ -11,8 +11,8 @@
                                 <div class="row">
                                     <div class="col-md-3 mt">
                                         <select class="form-control" id="type">
-                                            <option value="wa">Wallet Address</option>
-                                            <option value="tx">Transaction Amount</option>
+                                            <option value="address">Wallet Address</option>
+                                            <option value="amount">Transaction Amount</option>
                                         </select>
                                     </div>
                                     <div class="col-md-5 mt">
@@ -151,6 +151,22 @@
                     /* Open this row */
                     this.src = "static/lib/advanced-datatable/images/details_close.png";
                     oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
+                }
+            });
+        });
+
+        $("#graph").submit(function (event) {
+
+            /* stop form from submitting normally */
+            event.preventDefault();
+
+            url = '/api/monitors';
+
+            var api_call = $.post(url, { type: $("#type").val(), value: $("#value").val()});
+
+            api_call.done(function (result) {
+                if(result["success"] == true){
+                    window.location = "/monitors";
                 }
             });
         });

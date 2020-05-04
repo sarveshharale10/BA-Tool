@@ -68,10 +68,10 @@
             console.log('Type:' + type);
 
             if (type == 'wa') {
-                url = '/address';
+                url = '/api/address';
                 var posting = $.post(url, { address: $('#value').val(), cluster: $("#cluster").is(":checked")});
             } else {
-                url = '/transaction';
+                url = '/api/transaction';
                 var posting = $.post(url, { tx_hash: $('#value').val(), cluster: $("#cluster").is(":checked")});
             }
             posting.done(function (result) {

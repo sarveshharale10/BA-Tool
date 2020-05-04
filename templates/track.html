@@ -53,7 +53,7 @@
             event.preventDefault();
 
             /* get the action attribute from the <form action=""> element */
-            url = '/track';
+            url = '/api/track';
 
             /* Send the data using post with element id name and name2*/
             var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked")});
