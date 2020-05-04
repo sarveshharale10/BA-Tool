@@ -54,7 +54,7 @@
             /* stop form from submitting normally */
             event.preventDefault();
 
-            url = '/trace';
+            url = '/api/trace';
 
             var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked")});
             /* Alerts the results */
