@@ -229,14 +229,15 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                            {% for response in responses %}
                                                 <tr class="gradeX">
-                                                    <td>Trident</td>
-                                                    <td>Internet Explorer 4.0</td>
-                                                    <td class="hidden-phone">Win 95+</td>
+                                                    <td>{{ response.type }}</td>
+                                                    <td>{{ response.value }}</td>
+                                                    <td class="hidden-phone">{{ response.count }}</td>
                                                     <!-- <td class="center hidden-phone">.*</td> -->
                                                     <!-- <td class="center hidden-phone">.*</td> -->
                                                 </tr>
-                                               
+                                            {% endfor %}
                                             </tbody>
                                         </table>
                                     </div>

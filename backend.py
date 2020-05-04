@@ -324,7 +324,7 @@ def alert_dummy():
 	return result
 
 @app.route("/monitors_dummy",methods=['GET',"POST","PUT","DELETE"])
-def monitors():
+def monitors_dummy():
 	db = app.config["db"]
 	collection = db["monitors"]
 
@@ -365,9 +365,33 @@ def monitors():
 
 	return jsonify(success=False)
 
-@app.route("/monitors", methods=['GET','POST'])
-def monitor():
-	return render_template("monitors.html")
+@app.route("/monitors", methods=['GET','POST','PUT'])
+def monitors():
+	db = app.config["db"]
+	collection = db["monitors"]
+
+	if(request.method == "GET"):
+		result = collection.find()
+		responses = []
+		for row in result:
+			response = {}
+			response["type"] = row["type"]
+			response["value"] = row["value"]
+			response["count"] = db.alerts.find({"_id":row["_id"]}).count()
+			responses.append(response)
+		return render_template("monitors.html",responses=responses)
+
+	elif(request.method == "PUT"):
+		monitor_type = request.values["type"]
+		value = request.values["value"]
+		doc_id = f"{monitor_type}-{value}"
+		doc = {
+			"_id":doc_id,
+			"type":monitor_type,
+			"value":value
+		}
+		collection.insert(doc)
+		return jsonify(success=True)
 
 
 @app.after_request
