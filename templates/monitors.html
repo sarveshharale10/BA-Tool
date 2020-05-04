@@ -175,44 +175,14 @@
         *********************************************************************************************************************************************************** -->
         <!--main content start-->
         <section id="main-content">
-            <section class="wrapper">
-                <div class="row mt">
-                    <div class="col-lg-12">
-                        <div class="form-panel">
-                            <form id="graph" class="form" role="form">
-                                <h4 class=""><i class="fa fa-angle-right"></i> Add Monitor </h4>
-
-                                <div class="row">
-                                    <div class="col-md-3 mt">
-                                        <select class="form-control" id="type">
-                                            <option value="wa">Wallet Address</option>
-                                            <option value="tx">Transaction Amount</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-5 mt">
-                                        <div class="form-group">
-                                            <label class="sr-only" for="value">Value</label>
-                                            <input type="text" class="form-control" id="value"
-                                                placeholder="Enter Value">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2 mt">
-                                        <button type="submit" class="btn btn-theme"> Add Monitor </button>
-                                    </div>
-
-                                </div>
-                            </form>
-                        </div>
-                        <!-- /form-panel -->
-                    </div>
-                </div>
-                <div class="row mt">
+            <section class="wrapper">                   
+                <div class="row">
                     <div class="col-lg-12">
                         <div id="display-graph" class="form-panel form"
                             style="display: block; position: relative; padding: 3vh;">
 
 
-                            <h4><i class="fa fa-angle-right"></i> Current Monitors</h4>
+                            <h4><i class="fa fa-angle-right"></i> Notifications </h4>
                             <div class="row">
                                 <!-- page start-->
                                 <div class="content-panel" style="box-shadow: none !important;">
@@ -220,10 +190,10 @@
                                         <table cellpadding="0" cellspacing="0"
                                             class="display table table-bordered" id="hidden-table-info">
                                             <thead>
-                                                <tr>
+                                                <tr class="mt">
                                                     <th>Type</th>
                                                     <th>Value</th>
-                                                    <th class="hidden-phone">Number of Alerts</th>
+                                                    <th class="hidden-phone">Transaction Hash</th>
                                                     <!-- <th class="hidden-phone">Engine version</th> 
                                                     <th class="hidden-phone">CSS grade</th> -->
                                                 </tr>
@@ -675,18 +645,18 @@
             /*
              * Insert a 'details' column to the table
              */
-            var nCloneTh = document.createElement('th');
-            var nCloneTd = document.createElement('td');
-            nCloneTd.innerHTML = '<img src="static/lib/advanced-datatable/images/details_open.png">';
-            nCloneTd.className = "center";
+            // var nCloneTh = document.createElement('th');
+            // var nCloneTd = document.createElement('td');
+            // nCloneTd.innerHTML = '<img src="static/lib/advanced-datatable/images/details_open.png">';
+            // nCloneTd.className = "center";
 
-            $('#hidden-table-info thead tr').each(function () {
-                this.insertBefore(nCloneTh, this.childNodes[0]);
-            });
+            // $('#hidden-table-info thead tr').each(function () {
+            //     this.insertBefore(nCloneTh, this.childNodes[0]);
+            // });
 
-            $('#hidden-table-info tbody tr').each(function () {
-                this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
-            });
+            // $('#hidden-table-info tbody tr').each(function () {
+            //     this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
+            // });
 
             /*
              * Initialse DataTables, with no sorting on the 'details' column

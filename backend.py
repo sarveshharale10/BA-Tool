@@ -277,6 +277,11 @@ def search():
 def alert():
 	return render_template("alert.html")
 
+@app.route("/monitor", methods=['GET','POST'])
+def monitor():
+	return render_template("monitors.html")
+
+
 @app.after_request
 def add_header(r):
     r.headers["Access-Control-Allow-Origin"] = "*"
