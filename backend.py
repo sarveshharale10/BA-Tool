@@ -12,6 +12,14 @@ var mapFunction1 = function() {
 var reduceFunction1 = function(address,amounts) {
                           return Array.sum(amounts);
                       };
+db.alerts.aggregate({
+"$lookup":{
+     from: 'transactions',
+     localField: 'tx_hash',
+     foreignField: 'tx_hash',
+     as: 'details'
+}
+});
 '''
 
 app = Flask(__name__)
@@ -221,17 +229,17 @@ def track():
 	
 	responses = []
 	for key,value in result.items():
-		for v in value:
-			r = transactions.find({"tx_hash":v})
-			for row in r:
-				response = {}
-				response["tx_hash"] = row["tx_hash"]
-				response["timestamp"] = row["timestamp"]
-				response["inputs"] = row["inputs"]
-				response["outputs"] = row["outputs"]
-				response["depth"] = key
-				responses.append(response)
-	return convert_result_to_cluster(responses)
+		r = transactions.find({"tx_hash":{"$in":list(value)}})
+		for row in r:
+			response = {}
+			response["tx_hash"] = row["tx_hash"]
+			response["timestamp"] = row["timestamp"]
+			response["inputs"] = row["inputs"]
+			response["outputs"] = row["outputs"]
+			response["depth"] = key
+			responses.append(response)
+
+	return convert_result_to_json(address,responses)
 
 @app.route("/trace", methods=['GET','POST'])
 def trace():
@@ -248,16 +256,15 @@ def trace():
 	
 	responses = []
 	for key,value in result.items():
-		for v in value:
-			r = transactions.find({"tx_hash":v})
-			for row in r:
-				response = {}
-				response["tx_hash"] = row["tx_hash"]
-				response["timestamp"] = row["timestamp"]
-				response["inputs"] = row["inputs"]
-				response["outputs"] = row["outputs"]
-				response["depth"] = key
-				responses.append(response)
+		r = transactions.find({"tx_hash":{"$in":list(value)}})
+		for row in r:
+			response = {}
+			response["tx_hash"] = row["tx_hash"]
+			response["timestamp"] = row["timestamp"]
+			response["inputs"] = row["inputs"]
+			response["outputs"] = row["outputs"]
+			response["depth"] = key
+			responses.append(response)
 
 	return convert_result_to_json(address,responses)
 
@@ -277,6 +284,62 @@ def search():
 def alert():
 	return render_template("alert.html")
 
+@app.route("/alert_dummy",methods=['GET'])
+def alert_dummy():
+	db = app.config["db"]
+	collection = db["alerts"]
+
+	result = collection.find()
+	tx_hashes = []
+	for row in result:
+		tx_hashes.append(row["tx_hash"])
+
+	result = db.transactions.find({"tx_hash":{"$in":tx_hashes}},{"_id":0,"tx_hash":1}).sort("timestamp",-1)
+	return result
+
+@app.route("/monitors",methods=['GET',"POST","PUT","DELETE"])
+def monitors():
+	db = app.config["db"]
+	collection = db["monitors"]
+
+	if(request.method == "GET"):
+		result = collection.find()
+		responses = []
+		for row in result:
+			response = {}
+			response["type"] = row["type"]
+			response["value"] = row["value"]
+			response["count"] = len(row["alerts"])
+			responses.append(response)
+		return jsonify(responses=responses)
+
+	elif(request.method == "PUT"):
+		monitor_type = request.values["type"]
+		value = request.values["value"]
+		doc_id = f"{monitor_type}-{value}"
+		doc = {
+			"_id":doc_id,
+			"type":monitor_type,
+			"value":value
+		}
+		collection.insert(doc)
+		return jsonify(success=True)
+
+	elif(request.method == "POST"):
+		doc_id = request.values["id"]
+		tx_hash = request.values["tx_hash"]
+		collection = db["alerts"]
+
+		collection.insert({"monitor_id":doc_id,"tx_hash":tx_hash})
+		return jsonify(success=True)
+
+	elif(request.method == "DELETE"):
+		collection.remove({"_id":request.values["id"]})
+		return jsonify(success=True)
+
+	return jsonify(success=False)
+
+
 @app.after_request
 def add_header(r):
     r.headers["Access-Control-Allow-Origin"] = "*"
@@ -284,6 +347,3 @@ def add_header(r):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-#transactions.find({$or:[{"outputs":{$elemMatch:{"address":"1FijBR5s3EU1JS3UokzTZbkAibgL4SXzxm"}}},{"inputs":{$elemMatch:{"address":"1FijBR5s3EU1JS3UokzTZbkAibgL4SXzxm"}}}]}).count();
