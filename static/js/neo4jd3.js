@@ -241,7 +241,7 @@ function Neo4jD3(_selector, _options) {
                       if(d.labels[0] == "Transaction"){
                         return d.properties.tx_hash.substring(0,4)+"...";
                       }
-                      else if(d.labels[0] == "Address"){
+                      else{
                         return d.properties.value.substring(0,4)+"...";
                       }
                    });

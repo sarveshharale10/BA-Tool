@@ -58,7 +58,7 @@ def combine_inputs_outputs(responses):
 
 	return responses,unique_addresses
 
-def convert_result_to_json(query,responses):
+def convert_result_to_json(query,responses,clusterized = False):
 	graph = {}
 	graph["nodes"] = list()
 	graph["relationships"] = list()
@@ -110,6 +110,8 @@ def convert_result_to_json(query,responses):
 				}
 			})
 
+	label = "Cluster" if clusterized else "Address"
+
 	for address in unique_addresses:
 		color = "#F79767"
 
@@ -118,7 +120,7 @@ def convert_result_to_json(query,responses):
 
 		graph["nodes"].append({
 			"id":address,
-			"labels":["Address"],
+			"labels":[label],
 			"properties":{
 				"value":address
 			},
@@ -127,7 +129,7 @@ def convert_result_to_json(query,responses):
 	
 	return jsonify(graph)
 
-def convert_result_to_cluster(responses):
+def convert_result_to_cluster(query,responses):
 	responses,unique_addresses = combine_inputs_outputs(responses)
 
 	addresses = {}
@@ -159,6 +161,11 @@ def convert_result_to_cluster(responses):
 				tag = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 5))
 				addresses[address] = tag
 
+	try:
+		tag_for_query = addresses[query]
+	except:
+		tag_for_query = ""
+
 	for response in responses:
 		for inp in response["inputs"]:
 			inp["address"] = addresses[inp["address"]]
@@ -168,14 +175,16 @@ def convert_result_to_cluster(responses):
 
 	responses,unique_clusters = combine_inputs_outputs(responses)
 
-	return convert_result_to_json("",responses)
+	return convert_result_to_json(tag_for_query,responses,True)
 
 
 @app.route("/transaction",methods=['GET','POST'])
 def get_transaction():
 	if request.method == 'GET':
 		return render_template('search.html')
-	tx_hash = request.form['tx_hash']
+	tx_hash = request.values['tx_hash']
+	cluster = request.values["cluster"]
+
 	db = app.config["db"]
 	transactions = db["transactions"]
 
@@ -189,8 +198,10 @@ def get_transaction():
 		response["outputs"] = row["outputs"]
 		responses.append(response)
 
-	return convert_result_to_json("",responses)
-
+	if(cluster == "true"):
+		return convert_result_to_cluster("",responses)
+	else:
+		return convert_result_to_json("",responses)
 	
 
 @app.route("/address",methods=['GET','POST'])
@@ -198,6 +209,8 @@ def get_address():
 	if request.method == 'GET':
 		return render_template('search.html')
 	address = request.values['address']
+	cluster = request.values["cluster"]
+
 	db = app.config["db"]
 	transactions = db["transactions"]
 
@@ -211,7 +224,11 @@ def get_address():
 		response["outputs"] = row["outputs"]
 		responses.append(response)
 
-	return convert_result_to_cluster(responses)
+	if(cluster == "true"):
+		return convert_result_to_cluster(address,responses)
+	else:
+		return convert_result_to_json(address,responses)
+
 
 @app.route("/track",methods=['GET','POST'])
 def track():
@@ -219,6 +236,7 @@ def track():
 		return render_template('track.html')
 	address = request.values['address']
 	hop_count = request.values['hop_count']
+	cluster = request.values["cluster"]
 
 	db = app.config["db"]
 	transactions = db["transactions"]
@@ -239,14 +257,19 @@ def track():
 			response["depth"] = key
 			responses.append(response)
 
-	return convert_result_to_json(address,responses)
+	if(cluster == "true"):
+		return convert_result_to_cluster(address,responses)
+	else:
+		return convert_result_to_json(address,responses)
 
 @app.route("/trace", methods=['GET','POST'])
 def trace():
 	if request.method == 'GET':
 		return render_template('trace.html')
-	address = request.form['address']
-	hop_count = request.form['hop_count']
+	address = request.values['address']
+	hop_count = request.values['hop_count']
+	cluster = request.values["cluster"]
+
 	db = app.config["db"]
 	transactions = db["transactions"]
 
@@ -266,7 +289,10 @@ def trace():
 			response["depth"] = key
 			responses.append(response)
 
-	return convert_result_to_json(address,responses)
+	if(cluster == "true"):
+		return convert_result_to_cluster(address,responses)
+	else:
+		return convert_result_to_json(address,responses)
 
 @app.route("/", methods=['GET'])
 def home():
@@ -280,9 +306,9 @@ def dashboard():
 def search():
 	return render_template("search.html")
 
-@app.route("/alert", methods=['GET','POST'])
+@app.route("/alerts", methods=['GET','POST'])
 def alert():
-	return render_template("alert.html")
+	return render_template("alerts.html")
 
 @app.route("/alert_dummy",methods=['GET'])
 def alert_dummy():
@@ -297,7 +323,7 @@ def alert_dummy():
 	result = db.transactions.find({"tx_hash":{"$in":tx_hashes}},{"_id":0,"tx_hash":1}).sort("timestamp",-1)
 	return result
 
-@app.route("/monitors",methods=['GET',"POST","PUT","DELETE"])
+@app.route("/monitors_dummy",methods=['GET',"POST","PUT","DELETE"])
 def monitors():
 	db = app.config["db"]
 	collection = db["monitors"]
@@ -338,6 +364,10 @@ def monitors():
 		return jsonify(success=True)
 
 	return jsonify(success=False)
+
+@app.route("/monitors", methods=['GET','POST'])
+def monitor():
+	return render_template("monitors.html")
 
 
 @app.after_request
