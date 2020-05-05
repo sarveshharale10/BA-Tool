@@ -33,6 +33,10 @@ def transaction():
 def address():
 	return render_template('search.html')
 
+@app.route("/test",methods=['GET'])
+def test():
+	return render_template('test.html')
+
 @app.route("/track",methods=['GET'])
 def track():
 	return render_template('track.html')

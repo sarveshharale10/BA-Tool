@@ -8,26 +8,76 @@
         <div class="col-lg-12">
             <div class="form-panel">
                 <h4 class="mb"><i class="fa fa-angle-right"></i> Track </h4>
-                <form id="graph" class="form-inline" role="form">
-                    <div class="form-group">
-                        <label class="sr-only" for="exampleInputEmail2">Address</label>
-                        <input type="text" class="form-control" id="address" placeholder="Enter Address">
-                    </div>&nbsp&nbsp
-                    <div class="form-group">
-                        <label class="sr-only" for="exampleInputPassword2">Hop Count</label>
-                        <input type="text" class="form-control" id="hop_count" placeholder="Enter Hop Count">
-                    </div>&nbsp&nbsp
-                    <div class="form-group slider-labal">
-                        <label class="switch">
-                            <strong>
-                                Show Address Clusters                            
-                                <input type="checkbox" id="cluster">
-                                <span class="slider round"></span>
-                            </strong>                           
-                        </label> 
-                    </div> 
-                    <button type="submit" class="btn btn-theme"> Generate Graph </button>
+                <form id="graph" class="form" role="form">
+                    <div class="row">
+
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="form-group">
+                                        <label class="sr-only" for="exampleInputEmail2">Address</label>
+                                        <input type="text" class="form-control" id="address"
+                                            placeholder="Enter Address">
+                                    </div>
+
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="sr-only" for="exampleInputPassword2">Hop Count</label>
+                                        <input type="text" class="form-control" id="hop_count"
+                                            placeholder="Enter Hop Count">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <label class="control-label">Start Time</label>
+                                    <div data-date="2014-02-01T10:05:00Z" class="input-group date form_datetime-adv">
+                                        <input type="text" class="form-control" readonly="" size="16">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-theme date-set"><i
+                                                    class="fa fa-calendar"></i></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="control-label">End Time</label>
+                                    <div data-date="2014-02-01T10:05:00Z" class="input-group date form_datetime-adv">
+                                        <input type="text" class="form-control" readonly="" size="16">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-theme date-set"><i
+                                                    class="fa fa-calendar"></i></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="form-group slider-labal">
+                                <label class="switching">
+                                    <strong>
+                                        Show Address Clusters
+                                        <input type="checkbox" id="cluster">
+                                        <span class="slider round"></span>
+                                    </strong>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-theme"> Generate Graph </button>
+
+                        </div>
+                    </div>
+
                 </form>
+                <br>
             </div>
             <!-- /form-panel -->
         </div>
@@ -59,7 +109,7 @@
             url = '/api/track';
 
             /* Send the data using post with element id name and name2*/
-            var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked")});
+            var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked") });
             /* Alerts the results */
             posting.done(function (result) {
                 data = {
