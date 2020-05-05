@@ -28,7 +28,7 @@
     <style>
         .fullscreen {
             position: absolute;
-            top: 25px;
+            bottom: 25px;
             right: 25px;
             background-color: #eeeeee;
             border: #ccc solid 3px;
@@ -38,9 +38,30 @@
         }
 
         .fullscreen:hover {
+            /* position: absolute;
+            top: 25px;
+            right: 25px; */
+            background-color: #d7d7d7ee;
+            font-size: 20px;
+            padding: 1rem;
+        }
+        .close-graph {
             position: absolute;
             top: 25px;
             right: 25px;
+            background-color: #eeeeee;
+            border: #ccc solid 3px;
+            border-radius: 20px;
+            font-size: 20px;
+            padding: 1rem;
+            z-index: 20010;
+
+        }
+
+        .close-graph:hover {
+            /* position: absolute;
+            top: 25px;
+            right: 25px; */
             background-color: #d7d7d7ee;
             font-size: 20px;
             padding: 1rem;
@@ -343,6 +364,18 @@
                 console.log('Expanded')
 
             }
+        });
+        $('.close-graph').click(function(){
+            if ($('#display-graph-fullscreen').css('position') == 'fixed') {
+                $('#display-graph-fullscreen').attr('id', 'display-graph');
+                $('#neo4jd3').removeClass('neo4jd3-fullscreen');
+                $('#fullscreen-btn').removeClass('fa-compress');
+                $('#fullscreen-btn').addClass('fa-expand');
+                // $('.fullscreen').css('z-index', '20000');
+
+            } 
+            $('#display-graph').css('display','none');
+            document.getElementById('neo4jd3').innerHTML = "";
         })
     </script>
 
