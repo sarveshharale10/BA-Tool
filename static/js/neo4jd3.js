@@ -152,7 +152,10 @@ function Neo4jD3(_selector, _options) {
                        return classes;
                    })
                    .on('click', function(d) {
-                       d.fx = d.fy = null;
+                       if (info) {
+                          clearInfo();
+                          updateInfo(d);
+                       }
 
                        if (typeof options.onNodeClick === 'function') {
                            options.onNodeClick(d);
@@ -166,19 +169,11 @@ function Neo4jD3(_selector, _options) {
                        }
                    })
                    .on('mouseenter', function(d) {
-                       if (info) {
-                           updateInfo(d);
-                       }
-
                        if (typeof options.onNodeMouseEnter === 'function') {
                            options.onNodeMouseEnter(d);
                        }
                    })
                    .on('mouseleave', function(d) {
-                       if (info) {
-                           clearInfo(d);
-                       }
-
                        if (typeof options.onNodeMouseLeave === 'function') {
                            options.onNodeMouseLeave(d);
                        }
@@ -261,8 +256,9 @@ function Neo4jD3(_selector, _options) {
                                    options.onRelationshipDoubleClick(d);
                                }
                            })
-                           .on('mouseenter', function(d) {
+                           .on('click', function(d) {
                                if (info) {
+                                  clearInfo();
                                    updateInfo(d);
                                }
                            });

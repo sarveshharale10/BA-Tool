@@ -2,6 +2,7 @@ from . import api
 from .utils import *
 from flask import request,current_app
 from .track_trace import *
+from datetime import datetime
 
 def get_monitors(db):
 	result = db.monitors.find()
@@ -56,7 +57,35 @@ def address():
 	db = current_app.config["db"]
 	transactions = db["transactions"]
 
-	result = transactions.find({"$or":[{"outputs":{"$elemMatch":{"address":address}}},{"inputs":{"$elemMatch":{"address":address}}}]});
+	date_set = False
+	try:
+		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
+		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
+		date_set = True
+	except:
+		pass
+
+	if(date_set):
+		result = db.transactions.find({
+						"$and":[
+							{"$and":[{
+								"timestamp":{"$gte":datetime_start},
+							},
+							{
+								"timestamp":{"$lte":datetime_end},
+							}
+							]},
+							{"$or":[{
+								"outputs":{"$elemMatch":{"address":address}}
+							},
+							{
+								"inputs":{"$elemMatch":{"address":address}}
+							}]}
+						]
+					})
+	else:
+		result = transactions.find({"$or":[{"outputs":{"$elemMatch":{"address":address}}},{"inputs":{"$elemMatch":{"address":address}}}]});
+	
 	responses = []
 	for row in result:
 		response = {}
@@ -83,10 +112,33 @@ def track():
 	tracker = Tracker(transactions)
 
 	result = tracker.track(address,int(hop_count))
-	
+
+	date_set = False
+	try:
+		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
+		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
+		date_set = True
+	except Exception as e:
+		print(e)
+		
 	responses = []
 	for key,value in result.items():
-		r = transactions.find({"tx_hash":{"$in":list(value)}})
+		if(date_set):
+			r = db.transactions.find({
+						"$and":[{
+							"tx_hash":{"$in":list(value)}
+							},
+							{
+								"timestamp":{"$gte":datetime_start},
+							},
+							{
+								"timestamp":{"$lte":datetime_end},
+							}
+						]
+					})
+		else:
+			r = transactions.find({"tx_hash":{"$in":list(value)}})
+		
 		for row in r:
 			response = {}
 			response["tx_hash"] = row["tx_hash"]
@@ -114,9 +166,32 @@ def trace():
 
 	result = tracer.trace(address,int(hop_count))
 	
+	date_set = False
+	try:
+		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
+		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
+		date_set = True
+	except Exception as e:
+		print(e)
+		
 	responses = []
 	for key,value in result.items():
-		r = transactions.find({"tx_hash":{"$in":list(value)}})
+		if(date_set):
+			r = db.transactions.find({
+						"$and":[{
+							"tx_hash":{"$in":list(value)}
+							},
+							{
+								"timestamp":{"$gte":datetime_start},
+							},
+							{
+								"timestamp":{"$lte":datetime_end},
+							}
+						]
+					})
+		else:
+			r = transactions.find({"tx_hash":{"$in":list(value)}})
+		
 		for row in r:
 			response = {}
 			response["tx_hash"] = row["tx_hash"]
@@ -169,3 +244,46 @@ def alert_dummy():
 		return jsonify(success=True)
 
 	return tx_hashes
+
+@api.route("/top_holders",methods=['GET'])
+def top_holders():
+	db = current_app.config["db"]
+	collection = db["top_holders"]
+	result = collection.find().sort("value",-1).limit(10);
+	responses = []
+	for index,row in enumerate(result):
+		response = {}
+		response["rank"] = index + 1
+		response["address"] = row["_id"]
+		response["amount"] = row["value"]
+		responses.append(response)
+	return responses
+
+@api.route("/top_receivers",methods=['GET'])
+def top_receivers():
+	db = current_app.config["db"]
+	collection = db["top_receivers"]
+	result = collection.find().sort("value",-1).limit(10);
+	responses = []
+	for index,row in enumerate(result):
+		response = {}
+		response["rank"] = index + 1
+		response["address"] = row["_id"]
+		response["amount"] = row["value"]
+		responses.append(response)
+	return responses
+
+@api.route("/top_senders",methods=['GET'])
+def top_senders():
+	db = current_app.config["db"]
+	collection = db["top_senders"]
+	result = collection.find().sort("value",-1).limit(10);
+	responses = []
+	for index,row in enumerate(result):
+		response = {}
+		response["rank"] = index + 1
+		response["address"] = row["_id"]
+		response["amount"] = row["value"]
+		responses.append(response)
+	return responses
+

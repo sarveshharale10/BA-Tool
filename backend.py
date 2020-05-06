@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from flask import Flask,jsonify, render_template, request, redirect,json
 from api import api
-from api.routes import get_monitors,get_alerts
+from api.routes import get_monitors,get_alerts,top_holders,top_receivers,top_senders
 '''
 var mapFunction1 = function() {
     this.inputs.forEach(function(item){ emit(item.address,item.amount); });
@@ -51,7 +51,10 @@ def home():
 
 @app.route("/home", methods=['GET','POST'])
 def dashboard():
-	return render_template("index.html")
+	holders = top_holders()
+	receivers = top_receivers()
+	senders = top_senders()
+	return render_template("index.html",holders=holders,senders=senders,receivers=receivers)
 
 @app.route("/search", methods=['GET'])
 def search():
@@ -76,4 +79,4 @@ def add_header(r):
     return r
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0', port=9001)
+    app.run(debug=True,host='0.0.0.0', port=5000)
