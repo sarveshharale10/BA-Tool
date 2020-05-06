@@ -244,3 +244,46 @@ def alert_dummy():
 		return jsonify(success=True)
 
 	return tx_hashes
+
+@api.route("/top_holders",methods=['GET'])
+def top_holders():
+	db = current_app.config["db"]
+	collection = db["top_holders"]
+	result = collection.find().sort("value",-1).limit(10);
+	responses = []
+	for index,row in enumerate(result):
+		response = {}
+		response["rank"] = index + 1
+		response["address"] = row["_id"]
+		response["amount"] = row["value"]
+		responses.append(response)
+	return responses
+
+@api.route("/top_receivers",methods=['GET'])
+def top_receivers():
+	db = current_app.config["db"]
+	collection = db["top_receivers"]
+	result = collection.find().sort("value",-1).limit(10);
+	responses = []
+	for index,row in enumerate(result):
+		response = {}
+		response["rank"] = index + 1
+		response["address"] = row["_id"]
+		response["amount"] = row["value"]
+		responses.append(response)
+	return responses
+
+@api.route("/top_senders",methods=['GET'])
+def top_senders():
+	db = current_app.config["db"]
+	collection = db["top_senders"]
+	result = collection.find().sort("value",-1).limit(10);
+	responses = []
+	for index,row in enumerate(result):
+		response = {}
+		response["rank"] = index + 1
+		response["address"] = row["_id"]
+		response["amount"] = row["value"]
+		responses.append(response)
+	return responses
+

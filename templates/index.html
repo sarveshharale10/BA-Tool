@@ -19,29 +19,17 @@
           <tr>
             <th>#</th>
             <th>Wallet Address</th>
-            <th># Transactions</th>
             <th>Amount</th>
           </tr>
         </thead>
         <tbody>
+          {% for response in holders %}
           <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+            <td>{{ response.rank }}</td>
+            <td>{{ response.address }}</td>
+            <td>{{ response.amount }}</td>
           </tr>
-          <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Simon</td>
-            <td>Mosa</td>
-            <td>@twitter</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
@@ -66,24 +54,13 @@
           </tr>
         </thead>
         <tbody>
+          {% for response in receivers %}
           <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+            <td>{{ response.rank }}</td>
+            <td>{{ response.address }}</td>
+            <td>{{ response.amount }}</td>
           </tr>
-          <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Simon</td>
-            <td>Mosa</td>
-            <td>@twitter</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
@@ -108,24 +85,13 @@
           </tr>
         </thead>
         <tbody>
+         {% for response in senders %}
           <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+            <td>{{ response.rank }}</td>
+            <td>{{ response.address }}</td>
+            <td>{{ response.amount }}</td>
           </tr>
-          <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Simon</td>
-            <td>Mosa</td>
-            <td>@twitter</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
