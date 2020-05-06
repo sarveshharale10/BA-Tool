@@ -59,8 +59,8 @@ def address():
 
 	date_set = False
 	try:
-		datetime_start = datetime.strptime(request.values["start"],"%d %B %Y - %H:%M")
-		datetime_end = datetime.strptime(request.values["end"],"%d %B %Y - %H:%M")
+		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
+		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
 		date_set = True
 	except:
 		pass
@@ -115,11 +115,11 @@ def track():
 
 	date_set = False
 	try:
-		datetime_start = datetime.strptime(request.values["start"],"%d %B %Y - %H:%M")
-		datetime_end = datetime.strptime(request.values["end"],"%d %B %Y - %H:%M")
+		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
+		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
 		date_set = True
-	except:
-		pass
+	except Exception as e:
+		print(e)
 		
 	responses = []
 	for key,value in result.items():
@@ -166,9 +166,32 @@ def trace():
 
 	result = tracer.trace(address,int(hop_count))
 	
+	date_set = False
+	try:
+		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
+		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
+		date_set = True
+	except Exception as e:
+		print(e)
+		
 	responses = []
 	for key,value in result.items():
-		r = transactions.find({"tx_hash":{"$in":list(value)}})
+		if(date_set):
+			r = db.transactions.find({
+						"$and":[{
+							"tx_hash":{"$in":list(value)}
+							},
+							{
+								"timestamp":{"$gte":datetime_start},
+							},
+							{
+								"timestamp":{"$lte":datetime_end},
+							}
+						]
+					})
+		else:
+			r = transactions.find({"tx_hash":{"$in":list(value)}})
+		
 		for row in r:
 			response = {}
 			response["tx_hash"] = row["tx_hash"]
