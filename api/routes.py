@@ -2,6 +2,7 @@ from . import api
 from .utils import *
 from flask import request,current_app
 from .track_trace import *
+from datetime import datetime
 
 def get_monitors(db):
 	result = db.monitors.find()
@@ -56,7 +57,35 @@ def address():
 	db = current_app.config["db"]
 	transactions = db["transactions"]
 
-	result = transactions.find({"$or":[{"outputs":{"$elemMatch":{"address":address}}},{"inputs":{"$elemMatch":{"address":address}}}]});
+	date_set = False
+	try:
+		datetime_start = datetime.strptime(request.values["start"],"%d %B %Y - %H:%M")
+		datetime_end = datetime.strptime(request.values["end"],"%d %B %Y - %H:%M")
+		date_set = True
+	except:
+		pass
+
+	if(date_set):
+		result = db.transactions.find({
+						"$and":[
+							{"$and":[{
+								"timestamp":{"$gte":datetime_start},
+							},
+							{
+								"timestamp":{"$lte":datetime_end},
+							}
+							]},
+							{"$or":[{
+								"outputs":{"$elemMatch":{"address":address}}
+							},
+							{
+								"inputs":{"$elemMatch":{"address":address}}
+							}]}
+						]
+					})
+	else:
+		result = transactions.find({"$or":[{"outputs":{"$elemMatch":{"address":address}}},{"inputs":{"$elemMatch":{"address":address}}}]});
+	
 	responses = []
 	for row in result:
 		response = {}
@@ -83,10 +112,33 @@ def track():
 	tracker = Tracker(transactions)
 
 	result = tracker.track(address,int(hop_count))
-	
+
+	date_set = False
+	try:
+		datetime_start = datetime.strptime(request.values["start"],"%d %B %Y - %H:%M")
+		datetime_end = datetime.strptime(request.values["end"],"%d %B %Y - %H:%M")
+		date_set = True
+	except:
+		pass
+		
 	responses = []
 	for key,value in result.items():
-		r = transactions.find({"tx_hash":{"$in":list(value)}})
+		if(date_set):
+			r = db.transactions.find({
+						"$and":[{
+							"tx_hash":{"$in":list(value)}
+							},
+							{
+								"timestamp":{"$gte":datetime_start},
+							},
+							{
+								"timestamp":{"$lte":datetime_end},
+							}
+						]
+					})
+		else:
+			r = transactions.find({"tx_hash":{"$in":list(value)}})
+		
 		for row in r:
 			response = {}
 			response["tx_hash"] = row["tx_hash"]

@@ -36,7 +36,7 @@
                                 <div class="col-md-6">
                                     <label class="control-label">Start Time</label>
                                     <div data-date="2014-02-01T10:05:00Z" class="input-group date form_datetime-adv">
-                                        <input type="text" class="form-control" readonly="" size="16">
+                                        <input type="text" class="form-control" id="start" readonly="" size="16">
                                         <div class="input-group-btn">
                                             <button type="button" class="btn btn-theme date-set"><i
                                                     class="fa fa-calendar"></i></button>
@@ -48,7 +48,7 @@
                                 <div class="col-md-6">
                                     <label class="control-label">End Time</label>
                                     <div data-date="2014-02-01T10:05:00Z" class="input-group date form_datetime-adv">
-                                        <input type="text" class="form-control" readonly="" size="16">
+                                        <input type="text" class="form-control" id="end" readonly="" size="16">
                                         <div class="input-group-btn">
                                             <button type="button" class="btn btn-theme date-set"><i
                                                     class="fa fa-calendar"></i></button>
@@ -109,7 +109,7 @@
             url = '/api/track';
 
             /* Send the data using post with element id name and name2*/
-            var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked") });
+            var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked"), start:$("#start").val(), end:$("#end").val() });
             /* Alerts the results */
             posting.done(function (result) {
                 data = {
