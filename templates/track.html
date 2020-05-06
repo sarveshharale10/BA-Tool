@@ -32,31 +32,33 @@
 
                             </div>
                             <div class="row">
-
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <label class="control-label">Start Time</label>
-                                    <div data-date="2014-02-01T10:05:00Z" class="input-group date form_datetime-adv">
-                                        <input type="text" class="form-control" id="start" readonly="" size="16">
-                                        <div class="input-group-btn">
-                                            <button type="button" class="btn btn-theme date-set"><i
+                                    <!-- <div class="col-md-3 col-xs-11"> -->
+                                    <div data-date-viewmode="years" data-date-format="dd-mm-yyyy" data-date="01-01-2014"
+                                        class="input-append date dpYears">
+                                        <input type="text" readonly="" value="" size="16" class="form-control">
+                                        <span class="input-group-btn add-on">
+                                            <button class="btn btn-theme" type="button"><i
                                                     class="fa fa-calendar"></i></button>
-                                        </div>
+                                        </span>
                                     </div>
-
                                 </div>
-
-                                <div class="col-md-6">
+                                <div class="col-md-1">
+                                    
+                                </div>
+                                <div class="col-md-5">
                                     <label class="control-label">End Time</label>
-                                    <div data-date="2014-02-01T10:05:00Z" class="input-group date form_datetime-adv">
-                                        <input type="text" class="form-control" id="end" readonly="" size="16">
-                                        <div class="input-group-btn">
-                                            <button type="button" class="btn btn-theme date-set"><i
+                                    <!-- <div class="col-md-3 col-xs-11"> -->
+                                    <div data-date-viewmode="years" data-date-format="dd-mm-yyyy" data-date="01-01-2014"
+                                        class="input-append date dpYears">
+                                        <input type="text" readonly="" value="" size="16" class="form-control">
+                                        <span class="input-group-btn add-on">
+                                            <button class="btn btn-theme" type="button"><i
                                                     class="fa fa-calendar"></i></button>
-                                        </div>
+                                        </span>
                                     </div>
-
                                 </div>
-
                             </div>
 
                         </div>
@@ -86,6 +88,9 @@
         <div class="col-lg-12">
             <div id="display-graph" class="form-panel form"
                 style="display: none; position: relative; height:55vh; padding: 2.5vh;">
+                <span class="close-graph">
+                    <i id="close-graph-btn" class="fa fa-times"></i>
+                </span>
                 <span class="fullscreen">
                     <i id="fullscreen-btn" class="fa fa-expand"></i>
                 </span>
