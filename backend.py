@@ -3,11 +3,12 @@ from flask import Flask,jsonify, render_template, request, redirect,json
 from api import api
 from api.routes import get_monitors,get_alerts,top_holders,top_receivers,top_senders
 '''
-var mapFunction1 = function() {
-    this.inputs.forEach(function(item){ emit(item.address,item.amount); });
+var mapFunction3 = function() {
+    this.outputs.forEach(function(item){ emit(item.address,+item.amount); });
+	this.inputs.forEach(function(item){ emit(item.address,-item.amount); });
 }
 
-var reduceFunction1 = function(address,amounts) {
+var reduceFunction3 = function(address,amounts) {
                           return Array.sum(amounts);
                       };
 db.alerts.aggregate({
