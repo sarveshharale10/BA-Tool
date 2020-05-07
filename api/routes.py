@@ -45,9 +45,10 @@ def get_transaction():
 		responses.append(response)
 
 	if(cluster == "true"):
-		return convert_result_to_cluster("",responses)
+		graph = convert_result_to_cluster("",responses)
 	else:
-		return convert_result_to_json("",responses)
+		graph = convert_result_to_json("",responses)
+	return jsonify(graph)
 
 @api.route("/address",methods=['POST'])
 def address():
