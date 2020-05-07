@@ -39,7 +39,7 @@
                 <h4><i class="fa fa-angle-right"></i> Current Monitors</h4>
                 <div class="row">
                     <!-- page start-->
-                    <div class="content-panel" style="box-shadow: none !important;">
+                    <div class="content-panel" style="box-shadow: none !important; font-size:large !important;">
                         <div class="adv-table">
                             <table cellpadding="0" cellspacing="0" class="display table table-bordered"
                                 id="hidden-table-info">
@@ -54,7 +54,7 @@
                                 </thead>
                                 <tbody>
                                     {% for response in responses %}
-                                    <tr class="gradeX">
+                                    <tr class="gradeA">
                                         <td>{{ response.type }}</td>
                                         <td>{{ response.value }}</td>
                                         <td class="hidden-phone">{{ response.count }}</td>
@@ -107,7 +107,7 @@ src="static/lib/advanced-datatable/js/jquery.dataTables.js"></script>
          */
         var nCloneTh = document.createElement('th');
         var nCloneTd = document.createElement('td');
-        nCloneTd.innerHTML = '<img src="static/lib/advanced-datatable/images/details_open.png">';
+        nCloneTd.innerHTML = '<span class="delete-icon" style="font-size:25px;"><i class="fa fa-trash-o "></i></span>';
         nCloneTd.className = "center";
 
         $('#hidden-table-info thead tr').each(function () {
