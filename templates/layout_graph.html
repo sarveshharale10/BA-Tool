@@ -46,6 +46,7 @@
             font-size: 20px;
             padding: 1rem;
         }
+
         .close-graph {
             position: absolute;
             top: 25px;
@@ -145,10 +146,10 @@
         }
 
         .neo4jd3-fullscreen {
-            position:absolute !important;
-            margin:auto !important;
-            width:96vw !important;
-            height:95vh !important;
+            position: absolute !important;
+            margin: auto !important;
+            width: 96vw !important;
+            height: 95vh !important;
 
         }
     </style>
@@ -178,6 +179,88 @@
                 <!--  notification start -->
                 <ul class="nav top-menu">
                     <!-- settings start -->
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="index.html#">
+                            <i class="fa fa-cog"></i>
+                            <!-- <span class="badge bg-theme">4</span> -->
+                        </a>
+                        <ul class="dropdown-menu extended tasks-bar">
+                            <div class="notify-arrow notify-arrow-green"></div>
+                            <li>
+                                <p class="green">Tool Settings</p>
+                            </li>
+                            <li>
+                                <div class="task-info">
+                                    <a>
+                                        <h4>
+                                            Blockchain for Analysis
+                                        </h4>
+                                        <div class="col-md-10 settings">
+                                            <select class="form-control mt" id="db_val">
+                                                <option value="ba" {% if config.db=='ba' %} selected="selected"
+                                                    {% endif %}>Bitcoin BTC</option>
+                                                <option value="vjcoin" {% if config.db=='vjcoin' %} selected="selected"
+                                                    {% endif %}>VJCoin</option>
+                                            </select>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </li>
+                            <li>
+                                <div class="task-info">
+                                    <a>
+                                        <h4>
+                                            Limit number of Nodes
+                                        </h4>
+                                        <div class="col-md-10 settings">
+                                            <select class="form-control mt" id="limit_num">
+                                                <option value="500" {% if config.LIMIT==500 %} selected="selected"
+                                                    {% endif %}> 500 </option>
+                                                <option value="1000" {% if config.LIMIT==1000 %} selected="selected"
+                                                    {% endif %}>1000</option>
+                                                <option value="2000" {% if config.LIMIT==2000 %} selected="selected"
+                                                    {% endif %}>2000</option>
+                                                <option value="4000" {% if config.LIMIT==4000 %} selected="selected"
+                                                    {% endif %}>4000</option>
+                                            </select>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <!-- <li>
+                                <a href="index.html#">
+                                    <div class="task-info">
+                                        <div class="desc">Product Development</div>
+                                        <div class="percent">80%</div>
+                                    </div>
+                                    <div class="progress progress-striped">
+                                        <div class="progress-bar progress-bar-info" role="progressbar"
+                                            aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                            <span class="sr-only">80% Complete</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="index.html#">
+                                    <div class="task-info">
+                                        <div class="desc">Payments Sent</div>
+                                        <div class="percent">70%</div>
+                                    </div>
+                                    <div class="progress progress-striped">
+                                        <div class="progress-bar progress-bar-danger" role="progressbar"
+                                            aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%">
+                                            <span class="sr-only">70% Complete (Important)</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li> -->
+                            <li class="external">
+                                <a>Close Dropdown</a>
+                            </li>
+                        </ul>
+                    </li>
                     <!-- inbox dropdown end -->
                     <!-- notification dropdown start-->
                     <li id="header_notification_bar" class="dropdown">
@@ -323,7 +406,7 @@
         <!--footer end -->
     </section>
     <!-- js placed at the end of the document so the pages load faster -->
-    
+
     <script src="static/lib/jquery/jquery.min.js"></script>
     <script src="static/lib/bootstrap/js/bootstrap.min.js"></script>
     <script class="include" type="text/javascript" src="static/lib/jquery.dcjqaccordion.2.7.js"></script>
@@ -348,6 +431,25 @@
     <script src="/static/js/d3.min.js"></script>
     <script src="/static/js/neo4jd3.js"></script>
     <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.settings').bind('click', function (e) {
+                e.stopPropagation();
+                console.log('Clicked');
+            });
+            $('.settings').change(function () {
+                // e.stopPropagation();
+                url = '/settings';
+                console.log('change')
+                console.log($('#db_val :selected').val());
+                console.log($('#limit_num :selected').val());
+                var posting = $.post(url, { db: $('#db_val :selected').val(), limit: $('#limit_num :selected').val() });
+                posting.done(function (result) {
+                    console.log('results:' + result)
+
+                });
+            });
+        });
 
         $('.fullscreen').click(function () {
             if ($('#display-graph-fullscreen').css('position') == 'fixed') {
@@ -372,7 +474,7 @@
 
             }
         });
-        $('.close-graph').click(function(){
+        $('.close-graph').click(function () {
             if ($('#display-graph-fullscreen').css('position') == 'fixed') {
                 $('#display-graph-fullscreen').attr('id', 'display-graph');
                 $('#neo4jd3').removeClass('neo4jd3-fullscreen');
@@ -380,8 +482,8 @@
                 $('#fullscreen-btn').addClass('fa-expand');
                 // $('.fullscreen').css('z-index', '20000');
 
-            } 
-            $('#display-graph').css('display','none');
+            }
+            $('#display-graph').css('display', 'none');
             document.getElementById('neo4jd3').innerHTML = "";
         })
     </script>
