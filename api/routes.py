@@ -55,7 +55,7 @@ def address():
 	cluster = request.values["cluster"]
 
 	db = current_app.config["db"]
-	node_limit = current_app.config["node_limit"]
+	node_limit = current_app.config["limit"]
 	transactions = db["transactions"]
 
 	date_set = False
@@ -134,7 +134,7 @@ def track_trace():
 		pass
 		
 	responses = []
-	node_limit = int(current_app.config["node_limit"] / int(hop_count))
+	node_limit = int(current_app.config["limit"] / int(hop_count))
 	total_count = 0
 	for key,value in result.items():
 		total_count += len(value)

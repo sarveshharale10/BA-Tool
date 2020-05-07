@@ -32,7 +32,7 @@
 
                             </div>
                             <div class="row">
-                                <div class="col-md-5">
+                                <div class="col-md-5 col-xs-11">
                                     <label class="control-label">Start Date</label>
                                     <!-- <div class="col-md-3 col-xs-11"> -->
                                     <div data-date-viewmode="years" data-date-format="dd-mm-yyyy" data-date="01-01-2014"
@@ -47,7 +47,7 @@
                                 <div class="col-md-1">
                                     
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-5 col-xs-11">
                                     <label class="control-label">End Date</label>
                                     <!-- <div class="col-md-3 col-xs-11"> -->
                                     <div data-date-viewmode="years" data-date-format="dd-mm-yyyy" data-date="01-01-2014"
@@ -116,6 +116,8 @@
             /* Send the data using post with element id name and name2*/
             var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked"), start:$("#start").val(), end:$("#end").val() });
             /* Alerts the results */
+            alert('Processing Request. Please wait while the request is processed.')
+
             posting.done(function (result) {
                 data = {
                     "results": [{
