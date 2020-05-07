@@ -55,6 +55,7 @@ def address():
 	cluster = request.values["cluster"]
 
 	db = current_app.config["db"]
+	node_limit = current_app.config["limit"]
 	transactions = db["transactions"]
 
 	date_set = False
@@ -82,11 +83,11 @@ def address():
 								"inputs":{"$elemMatch":{"address":address}}
 							}]}
 						]
-					})
+					}).limit(node_limit)
 	else:
-		result = transactions.find({"$or":[{"outputs":{"$elemMatch":{"address":address}}},{"inputs":{"$elemMatch":{"address":address}}}]});
-	
+		result = transactions.find({"$or":[{"outputs":{"$elemMatch":{"address":address}}},{"inputs":{"$elemMatch":{"address":address}}}]}).limit(node_limit)
 	responses = []
+	total_count = result.count()
 	for row in result:
 		response = {}
 		response["tx_hash"] = row["tx_hash"]
@@ -96,86 +97,47 @@ def address():
 		responses.append(response)
 
 	if(cluster == "true"):
-		return convert_result_to_cluster(address,responses)
+		graph = convert_result_to_cluster(address,responses)
 	else:
-		return convert_result_to_json(address,responses)
+		graph = convert_result_to_json(address,responses)
+
+	graph["actual_tx_count"] = total_count
+	graph["received_tx_count"] = len([1 for x in graph["nodes"] if x["labels"][0] == "Transaction"])
+
+	return jsonify(graph)
 
 @api.route("/track",methods=['POST'])
-def track():
-	address = request.values['address']
-	hop_count = request.values['hop_count']
-	cluster = request.values["cluster"]
-
-	db = current_app.config["db"]
-	transactions = db["transactions"]
-
-	tracker = Tracker(transactions)
-
-	result = tracker.track(address,int(hop_count))
-
-	date_set = False
-	try:
-		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
-		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
-		date_set = True
-	except Exception as e:
-		print(e)
-		
-	responses = []
-	for key,value in result.items():
-		if(date_set):
-			r = db.transactions.find({
-						"$and":[{
-							"tx_hash":{"$in":list(value)}
-							},
-							{
-								"timestamp":{"$gte":datetime_start},
-							},
-							{
-								"timestamp":{"$lte":datetime_end},
-							}
-						]
-					})
-		else:
-			r = transactions.find({"tx_hash":{"$in":list(value)}})
-		
-		for row in r:
-			response = {}
-			response["tx_hash"] = row["tx_hash"]
-			response["timestamp"] = row["timestamp"]
-			response["inputs"] = row["inputs"]
-			response["outputs"] = row["outputs"]
-			response["depth"] = key
-			responses.append(response)
-
-	if(cluster == "true"):
-		return convert_result_to_cluster(address,responses)
-	else:
-		return convert_result_to_json(address,responses)
-
-@api.route("/trace", methods=['POST'])
-def trace():
-	address = request.values['address']
-	hop_count = request.values['hop_count']
-	cluster = request.values["cluster"]
-
-	db = current_app.config["db"]
-	transactions = db["transactions"]
-
-	tracer = Tracer(transactions)
-
-	result = tracer.trace(address,int(hop_count))
+@api.route("/trace",methods=['POST'])
+def track_trace():
 	
+	address = request.values['address']
+	hop_count = request.values['hop_count']
+	cluster = request.values["cluster"]
+
+	db = current_app.config["db"]
+	transactions = db["transactions"]
+
+	operation = request.path.split("/")[-1]
+	if(operation == "track"):
+		finder = Tracker(transactions)
+	elif(operation == "trace"):
+		finder = Tracer(transactions)
+
+	result = finder.find(address,int(hop_count))
+
 	date_set = False
 	try:
 		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
 		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
 		date_set = True
 	except Exception as e:
-		print(e)
+		pass
 		
 	responses = []
+	node_limit = int(current_app.config["limit"] / int(hop_count))
+	total_count = 0
 	for key,value in result.items():
+		total_count += len(value)
 		if(date_set):
 			r = db.transactions.find({
 						"$and":[{
@@ -188,9 +150,9 @@ def trace():
 								"timestamp":{"$lte":datetime_end},
 							}
 						]
-					})
+					}).limit(node_limit)
 		else:
-			r = transactions.find({"tx_hash":{"$in":list(value)}})
+			r = transactions.find({"tx_hash":{"$in":list(value)}}).limit(node_limit)
 		
 		for row in r:
 			response = {}
@@ -202,9 +164,13 @@ def trace():
 			responses.append(response)
 
 	if(cluster == "true"):
-		return convert_result_to_cluster(address,responses)
+		graph = convert_result_to_cluster(address,responses)
 	else:
-		return convert_result_to_json(address,responses)
+		graph = convert_result_to_json(address,responses)
+
+	graph["actual_tx_count"] = total_count
+	graph["received_tx_count"] = len([1 for x in graph["nodes"] if x["labels"][0] == "Transaction"])
+	return jsonify(graph)
 
 @api.route("/monitors",methods=['GET',"POST","DELETE"])
 def monitors():

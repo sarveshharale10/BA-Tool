@@ -862,7 +862,12 @@ function Neo4jD3(_selector, _options) {
         }
 
         Object.keys(d.properties).forEach(function(property) {
-            appendInfoElementProperty('property', property, JSON.stringify(d.properties[property]));
+          if(property == "value" && d.labels[0] == "Cluster"){
+            appendInfoElementProperty('property cluster '+d.properties[property], property, JSON.stringify(d.properties[property]));
+          }
+          else{
+             appendInfoElementProperty('property', property, JSON.stringify(d.properties[property]));
+          }
         });
     }
 
