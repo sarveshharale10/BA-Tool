@@ -36,7 +36,8 @@
                                     <!-- <div class="col-md-3 col-xs-11"> -->
                                     <div data-date-viewmode="years" data-date-format="dd-mm-yyyy" data-date="01-01-2014"
                                         class="input-append date dpYears">
-                                        <input type="text" readonly="" value="" id="start" size="16" class="form-control">
+                                        <input type="text" readonly="" value="" id="start" size="16"
+                                            class="form-control">
                                         <span class="input-group-btn add-on">
                                             <button class="btn btn-theme" type="button"><i
                                                     class="fa fa-calendar"></i></button>
@@ -44,7 +45,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-1">
-                                    
+
                                 </div>
                                 <div class="col-md-5 col-xs-11">
                                     <label class="control-label">End Date</label>
@@ -98,11 +99,35 @@
                     style="height: 50vh; box-sizing: border-box; width: inherit; z-index: inherit;"></div>
             </div>
         </div>
-    </div> <!-- Scripts -->
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:350000 !important;">
+        <div class="modal-dialog" style="z-index:350000 !important;">
+            <div class="modal-content" style="z-index:350000 !important;">
+                <div class="modal-header" style="z-index:350000 !important;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    Hi there, I am a Modal Example for Dashio Admin Panel.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /showback -->
+    <!-- Scripts -->
     <script src="static/js/d3.min.js"></script>
     <script src="static/js/neo4jd3.js?v=0.0.1"></script>
     <script src="static/js/jquery.js"></script>
     <script type='text/javascript'>
+        var cluster_list = {}
+
+        function set_clusters(cluster) {
+            cluster_list = cluster;
+        }
         /* attach a submit handler to the form */
         $("#graph").submit(function (event) {
 
@@ -111,11 +136,22 @@
 
             url = '/api/trace';
 
-            var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked") ,start:$("#start").val(), end:$("#end").val()});
+            var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked"), start: $("#start").val(), end: $("#end").val() });
             /* Alerts the results */
             alert('Processing Request. Please wait while the request is processed.')
 
             posting.done(function (result) {
+                clusters = []
+                dict = {}
+                for (i = 0; i < result['nodes'].length; i++) {
+                    if (result['nodes'][i]['labels'][0] == "Cluster") {
+                        cluster_id = result['nodes'][i]['id'];
+                        dict[cluster_id] = (result['nodes'][i]["addresses"]);
+                        clusters.push(dict);
+
+                    }
+                }
+                set_clusters(dict);
                 data = {
                     "results": [{
                         "data": [{ "graph": result }]
@@ -137,6 +173,40 @@
                     nodeRadius: 25,
                     zoomFit: false
                 });
+                $('.node').click(function () {
+                    // console.log('Click');
+                    $("a.cluster").removeAttr("href");
+                    $("a.cluster").css("cursor", "pointer");
+                    $("a.class").removeAttr("href");
+                    $('.cluster').click(function (event) {
+
+                        event.preventDefault();
+                        $(this).text().split('"')[1]
+                        $('#myModal').modal({
+                            show: 'true'
+                        });
+
+                        console.log('Clusters');
+
+                        var data = 'Cluster Name:' + $(this).text().split('"')[1];
+                        var addreesses = cluster_list[$(this).text().split('"')[1]];
+                        body = "<strong> Address List </strong> <br>"
+                        if (addreesses.length > 1) {
+                            body += "<ul>";
+                            for (i = 0; i < addreesses.length; i++) {
+                                body += "<li>" + addreesses[i] + "</li>"
+
+                            }
+                            body += "</ul>"
+                        } else {
+                            body += addreesses[0]
+                        }
+
+                        $(".modal-title").text(data);
+                        $(".modal-body").html(body);
+                    });
+                })
+
             });
         });
 
