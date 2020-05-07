@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from datetime import datetime
 
 db = MongoClient("mongodb://localhost:27017")["ba"]
 
@@ -22,8 +23,7 @@ for change in change_stream:
 
 	monitors = db.monitors.find()
 	for monitor in monitors:
-		if(monitor["type"] == "address" and addresses.contains(monitor["value"])):
-			#add alert
-		elif(monitor["type"] == "amount" and tx_volume >= monitor["value"]):
-			#add alert
+		if((monitor["type"] == "address" and addresses.contains(monitor["value"])) or (monitor["type"] == "amount" and tx_volume >= monitor["value"])):
+			db.monitors.update({"_id":monitor["id"]},{"$push":{"alerts":{"tx_hash":new_tx["tx_hash"],"timestamp":datetime.now()}}})
+
 	
