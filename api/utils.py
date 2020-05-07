@@ -41,9 +41,9 @@ def convert_result_to_json(query,responses,clusterized = False):
 	graph["relationships"] = list()
 
 	depth_colors = {
-		0:"#87faed",
-		1:"#87cefa",
-		2:"#8795fa"
+		0:"#2ebf91",
+		1:"#5d8be8",
+		2:"#8360c3"
 	}
 
 	responses,unique_addresses = combine_inputs_outputs(responses)
@@ -53,7 +53,7 @@ def convert_result_to_json(query,responses,clusterized = False):
 		color = "#57C7E3"
 
 		if("depth" in response):
-			color = depth_colors[response["depth"]]
+			color = depth_colors[response["depth"]%3]
 
 		if(response["tx_hash"] == query):
 			color = "#ff0000"

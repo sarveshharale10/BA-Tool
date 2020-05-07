@@ -62,8 +62,6 @@ def dashboard():
 	holders = top_holders()
 	receivers = top_receivers()
 	senders = top_senders()
-	# print(app.config["db_name"])
-	print(app.config)
 	settings = {"db":app.config["db_name"],"limit":app.config["limit"]}
 	return render_template("index.html",holders=holders,senders=senders,receivers=receivers,config=settings)
 
