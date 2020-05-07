@@ -22,6 +22,7 @@ db.alerts.aggregate({
 
 app = Flask(__name__)
 app.config["db"] = MongoClient("mongodb://localhost:27017")["ba"]
+app.config["node_limit"] = 50
 app.register_blueprint(api)
 
 

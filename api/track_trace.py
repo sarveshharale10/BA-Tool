@@ -5,10 +5,17 @@ client = pymongo.MongoClient("mongodb://localhost:27017")
 
 transactions = client["ba"]["transactions"]
 
-class Tracker():
-
+class Finder():
 	def __init__(self,transactions):
 		self.transactions = transactions
+
+	def find(self,address,hop_count):
+		pass
+
+class Tracker(Finder):
+
+	def __init__(self,transactions):
+		super().__init__(transactions)
 
 	def get_single_forward_transactions(self,addresses):
 
@@ -20,7 +27,7 @@ class Tracker():
 
 		return single_hop_transactions
 
-	def track(self,address,hop_count):
+	def find(self,address,hop_count):
 		result = {}
 		#returns transactions at each level
 		txs = self.get_single_forward_transactions([address])
@@ -42,10 +49,10 @@ class Tracker():
 
 		return result
 
-class Tracer():
+class Tracer(Finder):
 
 	def __init__(self,transactions):
-		self.transactions = transactions
+		super().__init__(transactions)
 
 	def get_single_backward_transactions(self,addresses):
 
@@ -57,7 +64,7 @@ class Tracer():
 
 		return single_hop_transactions
 
-	def trace(self,address,hop_count):
+	def find(self,address,hop_count):
 		result = {}
 		txs = self.get_single_backward_transactions([address])
 		result[0] = txs

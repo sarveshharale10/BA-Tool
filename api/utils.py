@@ -35,7 +35,7 @@ def combine_inputs_outputs(responses):
 
 	return responses,unique_addresses
 
-def convert_result_to_json(query,responses,clusterized = False):
+def convert_result_to_json(query,responses,clusterized = False,addresses = None):
 	graph = {}
 	graph["nodes"] = list()
 	graph["relationships"] = list()
@@ -55,17 +55,19 @@ def convert_result_to_json(query,responses,clusterized = False):
 		if("depth" in response):
 			color = depth_colors[response["depth"]]
 
-		if(response["tx_hash"] == query):
-			color = "#ff0000"
-
-		graph["nodes"].append({
+		node = {
 			"id":response["tx_hash"],
 			"labels":["Transaction"],
 			"properties":{
-				"tx_hash":response["tx_hash"]
+				"tx_hash":response["tx_hash"],
 			},
 			"color":color
-		})
+		}
+
+		if("depth" in response):
+			node["properties"]["depth"] = response["depth"] + 1
+
+		graph["nodes"].append(node)
 
 		for inp in response["inputs"]:
 			graph["relationships"].append({
@@ -90,6 +92,10 @@ def convert_result_to_json(query,responses,clusterized = False):
 	label = "Cluster" if clusterized else "Address"
 
 	for address in unique_addresses:
+		if(clusterized):
+			cluster_members = [key for key in addresses.keys() if addresses[key] == address]
+		else:
+			cluster_members = []
 		color = "#F79767"
 
 		if(address == query):
@@ -101,10 +107,11 @@ def convert_result_to_json(query,responses,clusterized = False):
 			"properties":{
 				"value":address
 			},
-			"color":color
+			"color":color,
+			"addresses":cluster_members
 		})
 	
-	return jsonify(graph)
+	return graph
 
 def convert_result_to_cluster(query,responses):
 	responses,unique_addresses = combine_inputs_outputs(responses)
@@ -152,4 +159,4 @@ def convert_result_to_cluster(query,responses):
 
 	responses,unique_clusters = combine_inputs_outputs(responses)
 
-	return convert_result_to_json(tag_for_query,responses,True)
+	return convert_result_to_json(tag_for_query,responses,True,addresses)
