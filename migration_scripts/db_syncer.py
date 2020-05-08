@@ -4,10 +4,29 @@ import pandas as pd
 import time
 import os
 import requests
+from datetime import datetime
 
 class DBSnycer():
 	def sync_db(self):
 		pass
+
+	def check_for_alerts(self,tx,db):
+		tx_volume = 0
+
+		addresses = set()
+		for inp in tx["inputs"]:
+			addresses.add(inp["address"])
+
+		for output in tx["outputs"]:
+			addresses.add(output["address"])
+			tx_volume += output["amount"]
+
+
+		monitors = db.monitors.find()
+		for monitor in monitors:
+			if((monitor["type"] == "address" and monitor["value"] in addresses) or (monitor["type"] == "amount" and tx_volume >= float(monitor["value"]))):
+				db.monitors.update({"_id":monitor["_id"]},{"$push":{"alerts":{"tx_hash":tx["tx_hash"],"timestamp":datetime.now()}}})
+				print("Got Alert")
 
 class BtcDBSyncer(DBSnycer):
 
@@ -90,7 +109,7 @@ class BtcDBSyncer(DBSnycer):
 				documents.append(tx)
 			transactions.insert_many(documents)
 
-class VjCoinDbSyncer(DBSnycer):
+class VjCoinDbSyncer(DBSnycer):		
 
 	def process_dfs(self,dfs):
 		block_list = []
@@ -174,6 +193,8 @@ class VjCoinDbSyncer(DBSnycer):
 				record["amount"] = row['Amount']
 				tx["inputs"].append(record)
 				transactions.insert_one(tx)
+
+				self.check_for_alerts(tx,ba)
 
 	def sync_db(self):
 		client = MongoClient("mongodb://localhost:27017")
