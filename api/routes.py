@@ -22,7 +22,7 @@ def get_alerts(db):
 	responses = []
 	for row in result:
 		for alert in row["alerts"]:
-			responses.append({"type":row["type"],"value":row["value"],"tx_hash":alert})
+			responses.append({"type":row["type"],"value":row["value"],"tx_hash":alert["tx_hash"]})
 
 	return responses
 

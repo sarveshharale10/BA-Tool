@@ -23,8 +23,8 @@ db.alerts.aggregate({
 
 app = Flask(__name__)
 app.config["db_name"] = "ba"
-app.config["db"] = MongoClient("mongodb://localhost:27017")["ba"]
-app.config["limit"] = 500
+app.config["db"] = MongoClient("mongodb://localhost:27017")["vjcoin"]
+app.config["limit"] = 100
 app.register_blueprint(api)
 
 @app.route("/settings",methods=['POST'])
