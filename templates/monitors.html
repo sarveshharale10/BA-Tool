@@ -45,6 +45,7 @@
                                 id="hidden-table-info">
                                 <thead>
                                     <tr>
+                                        <th class="text-center">Delete</th>
                                         <th>Type</th>
                                         <th>Value</th>
                                         <th class="hidden-phone">Number of Alerts</th>
@@ -54,7 +55,11 @@
                                 </thead>
                                 <tbody>
                                     {% for response in responses %}
-                                    <tr class="gradeX">
+                                    <tr class="gradeA">
+                                        <td class="center">
+                                            <span class="delete-icon" style="cursor: pointer;"
+                                                data-id={{response.id}}><i class="fa fa-trash-o "></i></span>
+                                        </td>
                                         <td>{{ response.type }}</td>
                                         <td>{{ response.value }}</td>
                                         <td class="hidden-phone">{{ response.count }}</td>
@@ -85,7 +90,7 @@
 <script type="text/javascript" language="javascript" src="static/lib/advanced-datatable/js/jquery.js"></script>
 <script class="include" type="text/javascript" src="static/lib/jquery.dcjqaccordion.2.7.js"></script>
 <script type="text/javascript" language="javascript"
-src="static/lib/advanced-datatable/js/jquery.dataTables.js"></script>
+    src="static/lib/advanced-datatable/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="static/lib/advanced-datatable/js/DT_bootstrap.js"></script>
 
 <script type="text/javascript">
@@ -105,18 +110,18 @@ src="static/lib/advanced-datatable/js/jquery.dataTables.js"></script>
         /*
          * Insert a 'details' column to the table
          */
-        var nCloneTh = document.createElement('th');
-        var nCloneTd = document.createElement('td');
-        nCloneTd.innerHTML = '<img src="static/lib/advanced-datatable/images/details_open.png">';
-        nCloneTd.className = "center";
+        // var nCloneTh = document.createElement('th');
+        // var nCloneTd = document.createElement('td');
+        // nCloneTd.innerHTML = '<span class="delete-icon" style="font-size:25px;"><i class="fa fa-trash-o "></i></span>';
+        // nCloneTd.className = "center";
 
-        $('#hidden-table-info thead tr').each(function () {
-            this.insertBefore(nCloneTh, this.childNodes[0]);
-        });
+        // $('#hidden-table-info thead tr').each(function () {
+        //     this.insertBefore(nCloneTh, this.childNodes[0]);
+        // });
 
-        $('#hidden-table-info tbody tr').each(function () {
-            this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
-        });
+        // $('#hidden-table-info tbody tr').each(function () {
+        //     this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
+        // });
 
         /*
          * Initialse DataTables, with no sorting on the 'details' column
@@ -147,6 +152,21 @@ src="static/lib/advanced-datatable/js/jquery.dataTables.js"></script>
                 oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
             }
         });
+    });
+
+    $('.delete-icon').click(function (event) {
+        console.log($(this).attr('data-id'));
+        $.ajax({
+            url: '/api/monitors',
+            type: 'DELETE',
+            data: {id:$(this).attr('data-id')},
+            success: function (result) {
+                window.location.href = '/monitors';
+                // Do something with the result
+            }
+        });
+
+
     });
 
     $("#graph").submit(function (event) {

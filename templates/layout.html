@@ -292,37 +292,36 @@
     <script src="static/lib/jquery/jquery.min.js"></script>
     <script src="static/lib/bootstrap/js/bootstrap.min.js"></script>
 
-    
+
     <!-- js placed at the end of the document so the pages load faster -->
     <script src="static/lib/jquery.sparkline.js"></script>
     <script src="static/lib/sparkline-chart.js"></script>
     <script src="static/lib/jquery.scrollTo.min.js"></script>
     <script src="static/lib/jquery.nicescroll.js" type="text/javascript"></script>
     <script src="static/lib/zabuto_calendar.js"></script>
-    
-    
+
+
     <!--common script for all pages-->
     <script src="static/lib/common-scripts.js"> </script>
     <script type="text/javascript" src="static/lib/gritter/js/jquery.gritter.js"></script>
     <script type="text/javascript" src="static/lib/gritter-conf.js"></script>
     <script type="application/javascript">
-        $(document).ready(function () {
 
-            $('.settings').bind('click', function (e) {
-                e.stopPropagation();
-                console.log('Clicked');
-            });
-            $('.settings').change(function () {
-                // e.stopPropagation();
-                url = '/settings';
-                console.log('change')
-                console.log($('#db_val :selected').val());
-                console.log($('#limit_num :selected').val());
-                var posting = $.post(url, { db: $('#db_val :selected').val(), limit: $('#limit_num :selected').val() });
-                posting.done(function (result) {
-                    console.log('results:' + result)
+        $('.settings').bind('click', function (e) {
+            e.stopPropagation();
+            console.log('Clicked');
+        });
+        $('.settings').change(function () {
+            // e.stopPropagation();
+            url = '/settings';
+            console.log('change')
+            console.log($('#db_val :selected').val());
+            console.log($('#limit_num :selected').val());
+            var posting = $.post(url, { db: $('#db_val :selected').val(), limit: $('#limit_num :selected').val() });
+            posting.done(function (result) {
+                console.log('results:' + result)
+                location.reload();
 
-                });
             });
         });
 
@@ -337,7 +336,7 @@
     </script>
     {% block scripts %}
     {% endblock %}
-    
+
 
 </body>
 

@@ -431,23 +431,21 @@
     <script src="/static/js/d3.min.js"></script>
     <script src="/static/js/neo4jd3.js"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
+        $('.settings').bind('click', function (e) {
+            e.stopPropagation();
+            console.log('Clicked');
+        });
+        $('.settings').change(function () {
+            // e.stopPropagation();
+            url = '/settings';
+            console.log('change')
+            console.log($('#db_val :selected').val());
+            console.log($('#limit_num :selected').val());
+            var posting = $.post(url, { db: $('#db_val :selected').val(), limit: $('#limit_num :selected').val() });
+            posting.done(function (result) {
+                console.log('results:' + result)
+                location.reload();
 
-            $('.settings').bind('click', function (e) {
-                e.stopPropagation();
-                console.log('Clicked');
-            });
-            $('.settings').change(function () {
-                // e.stopPropagation();
-                url = '/settings';
-                console.log('change')
-                console.log($('#db_val :selected').val());
-                console.log($('#limit_num :selected').val());
-                var posting = $.post(url, { db: $('#db_val :selected').val(), limit: $('#limit_num :selected').val() });
-                posting.done(function (result) {
-                    console.log('results:' + result)
-
-                });
             });
         });
 

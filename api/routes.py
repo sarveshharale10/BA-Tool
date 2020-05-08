@@ -9,6 +9,7 @@ def get_monitors(db):
 	responses = []
 	for row in result:
 		response = {}
+		response["id"] = row["_id"]
 		response["type"] = row["type"]
 		response["value"] = row["value"]
 		response["count"] = len(row["alerts"])
