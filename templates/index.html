@@ -6,6 +6,8 @@
   <h2>
     Insights Dashboard
   </h2>
+  {% if holders|count %}
+
   <div class="col-lg-6 mt">
     <div class="content-panel">
       <div class="row">
@@ -83,7 +85,9 @@
       </div>
     </div>
   </div>
+  {% endif %}
   <!-- /col-md-12 -->
+  {% if receivers|count %}
   <div class="col-lg-6 mt">
     <div class="content-panel">
       <div class="row">
@@ -161,6 +165,9 @@
       </div>
     </div>
   </div>
+  {% endif %}
+  
+  {% if senders|count %}
 
   <!-- /col-md-12 -->
   <div class="col-lg-6 mt">
@@ -240,6 +247,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
 </section>
 {% endblock content %}

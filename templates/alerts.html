@@ -11,28 +11,29 @@
                 <div class="row">
                     <!-- page start-->
                     <div class="content-panel" style="box-shadow: none !important;">
-                        <div class="adv-table">
+                        <div>
                             <table cellpadding="0" cellspacing="0" class="display table table-bordered"
-                                id="hidden-table-info">
+                                id="hidden-table-info" style="table-layout:fixed;">
                                 <thead>
                                     <tr class="mt">
                                         <th>Type</th>
-                                        <th>Value</th>
-                                        <th class="hidden-phone">Transaction Hash</th>
-                                        <!-- <th class="hidden-phone">Engine version</th> 
-                                                    <th class="hidden-phone">CSS grade</th> -->
+                                        <th style="width: 40%">Value</th>
+                                        <th style="width: 40%" class="hidden-phone">Transaction Hash</th>
+                                        <!-- <th class="hidden-phone">Engine version</th>
+                                        <th class="hidden-phone">CSS grade</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {% for response in responses %}
+                                    {% for response in responses %}
                                     <tr class="gradeX">
                                         <td>{{ response.type }}</td>
-                                        <td>{{ response.value }}</td>
-                                        <td class="hidden-phone">{{ response.tx_hash }}</td>
-                                        <!-- <td class="center hidden-phone">.*</td> -->
-                                        <!-- <td class="center hidden-phone">.*</td> -->
+                                        <td style="width: 40% !important; word-wrap: break-word;">{{ response.value }}
+                                        </td>
+                                        <td style="width: 40%" class="hidden-phone">{{ response.tx_hash }}</td>
+
                                     </tr>
-                                {% endfor %}
+                                    {% endfor %}
+
                                 </tbody>
                             </table>
                         </div>
@@ -55,87 +56,87 @@
 {% endblock content %}
 {% block scripts %}
 <!--script for Monitors page-->
-    <script type="text/javascript" language="javascript" src="static/lib/advanced-datatable/js/jquery.js"></script>
-    
-    <script type="text/javascript" language="javascript"
+<script type="text/javascript" language="javascript" src="static/lib/advanced-datatable/js/jquery.js"></script>
+
+<script type="text/javascript" language="javascript"
     src="static/lib/advanced-datatable/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="static/lib/advanced-datatable/js/DT_bootstrap.js"></script>
-    
-    <script type="text/javascript">
-        /* Formating function for row details */
-        function fnFormatDetails(oTable, nTr) {
-            var aData = oTable.fnGetData(nTr);
-            var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
-            sOut += '<tr><td>Rendering engine:</td><td>' + aData[1] + ' ' + aData[4] + '</td></tr>';
-            sOut += '<tr><td>Link to source:</td><td>Could provide a link here</td></tr>';
-            sOut += '<tr><td>Extra info:</td><td>And any further details here (images etc)</td></tr>';
-            sOut += '</table>';
+<script type="text/javascript" src="static/lib/advanced-datatable/js/DT_bootstrap.js"></script>
 
-            return sOut;
-        }
+<script type="text/javascript">
+    /* Formating function for row details */
+    function fnFormatDetails(oTable, nTr) {
+        var aData = oTable.fnGetData(nTr);
+        var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
+        sOut += '<tr><td>Rendering engine:</td><td>' + aData[1] + ' ' + aData[4] + '</td></tr>';
+        sOut += '<tr><td>Link to source:</td><td>Could provide a link here</td></tr>';
+        sOut += '<tr><td>Extra info:</td><td>And any further details here (images etc)</td></tr>';
+        sOut += '</table>';
 
-        $(document).ready(function () {
-            /*
-             * Insert a 'details' column to the table
-             */
-            var nCloneTh = document.createElement('th');
-            var nCloneTd = document.createElement('td');
-            nCloneTd.innerHTML = '<img src="static/lib/advanced-datatable/images/details_open.png">';
-            nCloneTd.className = "center";
+        return sOut;
+    }
 
-            $('#hidden-table-info thead tr').each(function () {
-                this.insertBefore(nCloneTh, this.childNodes[0]);
-            });
+    $(document).ready(function () {
+        /*
+         * Insert a 'details' column to the table
+         */
+        var nCloneTh = document.createElement('th');
+        var nCloneTd = document.createElement('td');
+        nCloneTd.innerHTML = '<img src="static/lib/advanced-datatable/images/details_open.png">';
+        nCloneTd.className = "center";
 
-            $('#hidden-table-info tbody tr').each(function () {
-                this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
-            });
-
-            /*
-             * Initialse DataTables, with no sorting on the 'details' column
-             */
-            var oTable = $('#hidden-table-info').dataTable({
-                "aoColumnDefs": [{
-                    "bSortable": false,
-                    "aTargets": [0]
-                }],
-                "aaSorting": [
-                    [1, 'asc']
-                ]
-            });
-
-            /* Add event listener for opening and closing details
-             * Note that the indicator for showing which row is open is not controlled by DataTables,
-             * rather it is done here
-             */
-            $('#hidden-table-info tbody td img').live('click', function () {
-                var nTr = $(this).parents('tr')[0];
-                if (oTable.fnIsOpen(nTr)) {
-                    /* This row is already open - close it */
-                    this.src = "static/lib/advanced-datatable/media/images/details_open.png";
-                    oTable.fnClose(nTr);
-                } else {
-                    /* Open this row */
-                    this.src = "static/lib/advanced-datatable/images/details_close.png";
-                    oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
-                }
-            });
+        $('#hidden-table-info thead tr').each(function () {
+            this.insertBefore(nCloneTh, this.childNodes[0]);
         });
 
-        $("#graph").submit(function (event) {
-
-            /* stop form from submitting normally */
-            event.preventDefault();
-
-            url = '/api/monitors';
-
-            var api_call = $.post(url, { type: $("#type").val(), value: $("#value").val() });
-
-            api_call.done(function (result) {
-                if (result["success"] == true) {
-                    window.location = "/monitors";
-                }
-            });
+        $('#hidden-table-info tbody tr').each(function () {
+            this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
         });
-    </script>
+
+        /*
+         * Initialse DataTables, with no sorting on the 'details' column
+         */
+        var oTable = $('#hidden-table-info').dataTable({
+            "aoColumnDefs": [{
+                "bSortable": false,
+                "aTargets": [0]
+            }],
+            "aaSorting": [
+                [1, 'asc']
+            ]
+        });
+
+        /* Add event listener for opening and closing details
+         * Note that the indicator for showing which row is open is not controlled by DataTables,
+         * rather it is done here
+         */
+        $('#hidden-table-info tbody td img').live('click', function () {
+            var nTr = $(this).parents('tr')[0];
+            if (oTable.fnIsOpen(nTr)) {
+                /* This row is already open - close it */
+                this.src = "static/lib/advanced-datatable/media/images/details_open.png";
+                oTable.fnClose(nTr);
+            } else {
+                /* Open this row */
+                this.src = "static/lib/advanced-datatable/images/details_close.png";
+                oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
+            }
+        });
+    });
+
+    $("#graph").submit(function (event) {
+
+        /* stop form from submitting normally */
+        event.preventDefault();
+
+        url = '/api/monitors';
+
+        var api_call = $.post(url, { type: $("#type").val(), value: $("#value").val() });
+
+        api_call.done(function (result) {
+            if (result["success"] == true) {
+                window.location = "/monitors";
+            }
+        });
+    });
+</script>
 {% endblock scripts %}
