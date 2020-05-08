@@ -266,43 +266,32 @@
                     <li id="header_notification_bar" class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle">
                             <i class="fa fa-bell-o"></i>
-                            <span class="badge bg-warning">7</span>
+                            {% if config.alerts|count %}
+                            <span class="badge bg-warning">{{config.alerts|count}}</span>
+                            {% endif %}
+
                         </a>
                         <ul class="dropdown-menu extended notification">
                             <div class="notify-arrow notify-arrow-yellow"></div>
                             <li>
-                                <p class="yellow">You have 7 new notifications</p>
+                                <p class="yellow">You have {{config.alerts|count}} notifications</p>
                             </li>
+                            {% for response in config.alerts[:5] %}
                             <li>
-                                <a href="index.html#">
-                                    <span class="label label-danger"><i class="fa fa-bolt"></i></span>
-                                    Server Overloaded.
-                                    <span class="small italic">4 mins.</span>
+                                <a href="/alerts">
+                                    {% if response.type=='Address' %}
+                                    <span class="label label-success"><i class="fa fa-user"></i></span>
+                                    {% endif %}
+                                    {% if response.type=='Amount' %}
+                                    <span class="label label-success"><i class="fa fa-money"></i></span>
+                                    {% endif %}
+                                    {{ response.value }}
+                                    <span class="small italic">{{response.tx_hash}}</span>
                                 </a>
                             </li>
+                            {% endfor %}
                             <li>
-                                <a href="index.html#">
-                                    <span class="label label-warning"><i class="fa fa-bell"></i></span>
-                                    Memory #2 Not Responding.
-                                    <span class="small italic">30 mins.</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="index.html#">
-                                    <span class="label label-danger"><i class="fa fa-bolt"></i></span>
-                                    Disk Space Reached 85%.
-                                    <span class="small italic">2 hrs.</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="index.html#">
-                                    <span class="label label-success"><i class="fa fa-plus"></i></span>
-                                    New User Registered.
-                                    <span class="small italic">3 hrs.</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/monitor">See all notifications</a>
+                                <a href="/alerts">See all notifications</a>
                             </li>
                         </ul>
                     </li>
