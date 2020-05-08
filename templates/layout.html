@@ -163,9 +163,10 @@
             height: 95vh !important;
 
         }
-        .y-amount{
-            word-wrap:normal !important;
-                /* width: 40px;
+
+        .y-amount {
+            word-wrap: normal !important;
+            /* width: 40px;
                 left: -30px; */
 
         }
@@ -297,14 +298,30 @@
                             {% for response in config.alerts[:5] %}
                             <li>
                                 <a href="/alerts">
-                                    {% if response.type=='Address' %}
-                                    <span class="label label-success"><i class="fa fa-user"></i></span>
-                                    {% endif %}
-                                    {% if response.type=='Amount' %}
-                                    <span class="label label-success"><i class="fa fa-money"></i></span>
-                                    {% endif %}
-                                    {{ response.value }}
-                                    <span class="small italic">{{response.tx_hash}}</span>
+                                    <div class="row">
+                                        <div class="col-md-2">
+
+                                            {% if response.type=='address' %}
+                                            <span class="label label-success"><i class="fa fa-user"></i></span>
+                                            {% endif %}
+                                            {% if response.type=='amount' %}
+                                            <span class="label label-success"><i class="fa fa-money"></i></span>
+                                            {% endif %}
+
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span style="word-wrap: break-word;">
+                                                Value:{{ response.value [:20] }}..
+                                            </span>
+                                        </div><br>
+                                        <div class="col-md-4">
+                                            <!-- <span class="italic"> -->
+                                            Tx_hash:{{response.tx_hash[:20]}}..
+
+                                        </div>
+
+
+                                    </div>
                                 </a>
                             </li>
                             {% endfor %}
@@ -459,7 +476,7 @@
         }
         getURL()
 
-        function refresh_db(){
+        function refresh_db() {
             url = "/api/refresh"
             var posting = $.post(url);
 
