@@ -136,7 +136,7 @@
             /* stop form from submitting normally */
             event.preventDefault();
 
-            url = '/api/trace';
+            url = '/api/track';
 
             var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked"), start: $("#start").val(), end: $("#end").val() });
             /* Alerts the results */

@@ -193,7 +193,7 @@
             </div>
             <div class="top-menu">
                 <ul class="nav pull-right top-menu">
-                    <li><a class="logout" href="login.html">Refresh</a></li>
+                    <li><a class="logout" onclick="refresh_db()" style="cursor:pointer;">Refresh</a></li>
                 </ul>
             </div>
         </header>
@@ -332,6 +332,12 @@
             document.getElementById(x).classList.add('active');
         }
         getURL()
+
+        function refresh_db(){
+            url = "/api/refresh"
+            var posting = $.post(url);
+
+        }
 
     </script>
     {% block scripts %}

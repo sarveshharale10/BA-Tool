@@ -65,7 +65,7 @@ def get_entire_chain():
 	insert_df_mongo(df_transactions)
 	df_transactions.to_csv('vjchain.csv')
 
-def insert_df_mongo(df,block_height):
+def insert_df_mongo(self,df,block_height):
 	client = MongoClient("mongodb://localhost:27017")
 	ba = client["vjcoin"]
 	transactions = ba["transactions"]

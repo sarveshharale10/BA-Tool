@@ -3,6 +3,7 @@ from .utils import *
 from flask import request,current_app
 from .track_trace import *
 from datetime import datetime
+from multiprocessing import Process
 
 def get_monitors(db):
 	result = db.monitors.find()
@@ -26,6 +27,9 @@ def get_alerts(db):
 			responses.append({"type":row["type"],"value":row["value"],"tx_hash":alert["tx_hash"]})
 
 	return responses
+
+def sync_wrapper(syncer):
+	syncer.sync_db()
 
 @api.route("/transaction",methods=['POST'])
 def get_transaction():
@@ -201,18 +205,6 @@ def monitors():
 
 	return jsonify(success=False)
 
-@api.route("/alert_dummy",methods=['GET'])
-def alert_dummy():
-
-	if(request.method == "POST"):
-		doc_id = request.values["id"]
-		tx_hash = request.values["tx_hash"]
-
-		collection.update({"_id":doc_id},{"$push":{"alerts":tx_hash}})
-		return jsonify(success=True)
-
-	return tx_hashes
-
 @api.route("/top_holders",methods=['GET'])
 def top_holders():
 	db = current_app.config["db"]
@@ -254,4 +246,15 @@ def top_senders():
 		response["amount"] = row["value"]
 		responses.append(response)
 	return responses
+
+@api.route("/refresh",methods=['POST'])
+def refresh():
+	db_name = current_app.config["db_name"]
+
+	syncer = current_app.config["syncer"][db_name]
+	p = Process(target=sync_wrapper,args=(syncer,))
+	p.start()
+
+	return jsonify(success=1)
+
 

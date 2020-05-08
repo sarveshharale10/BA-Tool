@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from flask import Flask,jsonify, render_template, request, redirect,json
 from api import api
 from api.routes import get_monitors,get_alerts,top_holders,top_receivers,top_senders
+from migration_scripts.db_syncer import *
 '''
 var mapFunction3 = function() {
     this.outputs.forEach(function(item){ emit(item.address,+item.amount); });
@@ -23,8 +24,12 @@ db.alerts.aggregate({
 
 app = Flask(__name__)
 app.config["db_name"] = "ba"
-app.config["db"] = MongoClient("mongodb://localhost:27017")["vjcoin"]
+app.config["db"] = MongoClient("mongodb://localhost:27017")[app.config["db_name"]]
 app.config["limit"] = 100
+app.config["syncer"] = {
+	"ba":BtcDBSyncer(),
+	"vjcoin":VjCoinDbSyncer()
+}
 app.register_blueprint(api)
 
 @app.route("/settings",methods=['POST'])
