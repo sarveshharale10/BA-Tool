@@ -45,17 +45,20 @@ def setting():
 
 @app.route("/test",methods=['GET'])
 def test():
-	settings = {"db":app.config["db_name"],"limit":app.config["limit"]}
+	responses = get_alerts(app.config["db"])
+	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses}
 	return render_template('test.html',config=settings)
 
 @app.route("/track",methods=['GET'])
 def track():
-	settings = {"db":app.config["db_name"],"limit":app.config["limit"]}
+	responses = get_alerts(app.config["db"])
+	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses}
 	return render_template('track.html',config=settings)
 
 @app.route("/trace", methods=['GET'])
 def trace():
-	settings = {"db":app.config["db_name"],"limit":app.config["limit"]}
+	responses = get_alerts(app.config["db"])
+	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses}
 	return render_template('trace.html',config=settings)
 
 @app.route("/", methods=['GET'])
@@ -67,25 +70,29 @@ def dashboard():
 	holders = top_holders()
 	receivers = top_receivers()
 	senders = top_senders()
-	settings = {"db":app.config["db_name"],"limit":app.config["limit"]}
+	responses = get_alerts(app.config["db"])
+	print(responses)
+	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses}
 	return render_template("index.html",holders=holders,senders=senders,receivers=receivers,config=settings)
 
 @app.route("/search", methods=['GET'])
 def search():
-	settings = {"db":app.config["db_name"],"limit":app.config["limit"]}
+	responses = get_alerts(app.config["db"])
+	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses}
 	return render_template("search.html",config=settings)
 
 @app.route("/alerts", methods=['GET','POST'])
 def alert():
-	settings = {"db":app.config["db_name"],"limit":app.config["limit"]}
+	responses = get_alerts(app.config["db"])
+	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses}
 	db = app.config["db"]
-	responses = get_alerts(db)
 	return render_template("alerts.html",responses=responses,config=settings)
 
 
 @app.route("/monitors", methods=['GET'])
 def monitors():
-	settings = {"db":app.config["db_name"],"limit":app.config["limit"]}
+	responses = get_alerts(app.config["db"])
+	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses}
 	db = app.config["db"]
 	responses = get_monitors(db)
 	return render_template("monitors.html",responses=responses,config=settings)

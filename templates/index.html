@@ -6,20 +6,46 @@
   <h2>
     Insights Dashboard
   </h2>
-  <div class="col-md-6 mt">
+  {% if holders|count %}
+
+  <div class="col-lg-6 mt">
     <div class="content-panel">
-      <table class="table table-hover">
-        <h4><i class="fa fa-angle-right"></i> Top Holders</h4>
-        <div class="text-center">
-          <strong>
-            Time Frame: <i>05-08-2010 to 12-08-2010</i>
-          </strong>
+      <div class="row">
+        <div class="col-md-7 col-xs-8">
+          <h4><i class="fa fa-angle-right"></i> Top Holders</h4>
+          <div class="text-center">
+            <div class="btn-group">
+              <button type="button" class="btn btn-warning">1 Week</button>
+              <button type="button" class="btn btn-default">1 Month</button>
+              <button type="button" class="btn btn-default">1 Year</button>
+              <button type="button" class="btn btn-default">All Time</button>
+            </div>
+          </div>
         </div>
+        <div class="col-md-5 col-xs-4">
+          <div class="text-center">
+            <div class="slider-labal">
+              <label class="switching">
+                <strong>
+                  <span id="holders-title">
+                    Show Chart<br>
+                  </span>
+                  <input type="checkbox" id="holders">
+                  <span class="slider round"></span>
+                </strong>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table class="table table-hover" id="holders-table">
         <thead>
           <tr>
             <th>#</th>
             <th>Wallet Address</th>
             <th>Amount</th>
+            <th>Percentage</th>
           </tr>
         </thead>
         <tbody>
@@ -28,28 +54,78 @@
             <td>{{ response.rank }}</td>
             <td>{{ response.address }}</td>
             <td>{{ response.amount }}</td>
+            <td>{{ "%.2f"|format(response.amount * 100 / holders|sum(attribute='amount'))}}%</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      <div class="custom-bar-chart hidden" style="margin: 25px;" id="holders-chart">
+        <ul class="y-axis">
+          <li><span class="y-amount">{{ holders[0].amount*1.2}}</span></li>
+          <li><span class="y-amount">{{ holders[0].amount*1.2*0.8}}</span></li>
+          <li><span class="y-amount">{{ holders[0].amount*1.2*0.6}}</span></li>
+          <li><span class="y-amount">{{ holders[0].amount*1.2*0.4}}</span></li>
+          <li><span class="y-amount">{{ holders[0].amount*1.2*0.2}}</span></li>
+          <li><span class="y-amount">{{ holders[0].amount*1.2*0.0}}</span></li>
+        </ul>
+        <div class="bar">
+          <!--  -->
+        </div>
+        {% for response in holders[:6] %}
+        <div class="bar">
+          <div class="title tooltips" data-original-title={{ response.address }} data-toggle="tooltip"
+            data-placement="bottom">{{ response.address[:10]}}..</div>
+          <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
+            data-placement="top">
+            {{ response.amount * 1000 / holders|sum(attribute='amount')}} </div>
+        </div>
+
+
+        {% endfor %}
+      </div>
     </div>
   </div>
+  {% endif %}
   <!-- /col-md-12 -->
-  <!-- /col-md-12 -->
-  <div class="col-md-6 mt">
+  {% if receivers|count %}
+  <div class="col-lg-6 mt">
     <div class="content-panel">
-      <table class="table table-hover">
-        <h4><i class="fa fa-angle-right"></i> Top Receivers</h4>
-        <div class="text-center">
-          <strong>
-            Time Frame: <i>05-08-2010 to 12-08-2010</i>
-          </strong>
+      <div class="row">
+        <div class="col-md-7 col-xs-8">
+          <h4><i class="fa fa-angle-right"></i> Top Receivers</h4>
+          <div class="text-center">
+            <div class="btn-group">
+              <button type="button" class="btn btn-warning">1 Week</button>
+              <button type="button" class="btn btn-default">1 Month</button>
+              <button type="button" class="btn btn-default">1 Year</button>
+              <button type="button" class="btn btn-default">All Time</button>
+            </div>
+          </div>
         </div>
+        <div class="col-md-5 col-xs-4">
+          <div class="text-center">
+            <div class="slider-labal">
+              <label class="switching">
+                <strong>
+                  <span id="receivers-title">
+                    Show Chart<br>
+                  </span>
+                  <input type="checkbox" id="receivers">
+                  <span class="slider round"></span>
+                </strong>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table class="table table-hover" id="receivers-table">
         <thead>
           <tr>
             <th>#</th>
             <th>Wallet Address</th>
             <th>Amount</th>
+            <th>Percentage</th>
           </tr>
         </thead>
         <tbody>
@@ -58,45 +134,165 @@
             <td>{{ response.rank }}</td>
             <td>{{ response.address }}</td>
             <td>{{ response.amount }}</td>
+            <td>{{ "%.2f"|format(response.amount * 100 / receivers|sum(attribute='amount'))}}%</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      <div class="custom-bar-chart hidden" style="margin: 25px;" id="receivers-chart">
+        <ul class="y-axis">
+          <li><span class="y-amount">{{ receivers[0].amount*1.2}}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.8}}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.6}}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.4}}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.2}}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.0}}</span></li>
+        </ul>
+        <div class="bar">
+          <!--  -->
+        </div>
+        {% for response in receivers[:6] %}
+        <div class="bar">
+          <div class="title tooltips" data-original-title={{ response.address }} data-toggle="tooltip"
+            data-placement="bottom">{{ response.address[:10]}}..</div>
+          <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
+            data-placement="top">
+            {{ response.amount * 1000 / receivers|sum(attribute='amount')}} </div>
+        </div>
+
+
+        {% endfor %}
+      </div>
     </div>
   </div>
+  {% endif %}
+  
+  {% if senders|count %}
+
   <!-- /col-md-12 -->
-  <!-- /col-md-12 -->
-  <div class="col-md-6 mt">
+  <div class="col-lg-6 mt">
     <div class="content-panel">
-      <table class="table table-hover">
-        <h4><i class="fa fa-angle-right"></i> Top Senders</h4>
-        <div class="text-center">
-          <strong>
-            Time Frame: <i>05-08-2010 to 12-08-2010</i>
-          </strong>
+      <div class="row">
+        <div class="col-md-7 col-xs-8">
+          <h4><i class="fa fa-angle-right"></i> Top senders</h4>
+          <div class="text-center">
+            <div class="btn-group">
+              <button type="button" class="btn btn-warning">1 Week</button>
+              <button type="button" class="btn btn-default">1 Month</button>
+              <button type="button" class="btn btn-default">1 Year</button>
+              <button type="button" class="btn btn-default">All Time</button>
+            </div>
+          </div>
         </div>
+        <div class="col-md-5 col-xs-4">
+          <div class="text-center">
+            <div class="slider-labal">
+              <label class="switching">
+                <strong>
+                  <span id="senders-title">
+                    Show Chart<br>
+                  </span>
+                  <input type="checkbox" id="senders">
+                  <span class="slider round"></span>
+                </strong>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table class="table table-hover" id="senders-table">
         <thead>
           <tr>
             <th>#</th>
             <th>Wallet Address</th>
             <th>Amount</th>
+            <th>Percentage</th>
           </tr>
         </thead>
         <tbody>
-         {% for response in senders %}
+          {% for response in senders %}
           <tr>
             <td>{{ response.rank }}</td>
             <td>{{ response.address }}</td>
             <td>{{ response.amount }}</td>
+            <td>{{ "%.2f"|format(response.amount * 100 / senders|sum(attribute='amount'))}}%</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      <div class="custom-bar-chart hidden" style="margin: 25px;" id="senders-chart">
+        <ul class="y-axis">
+          <li><span class="y-amount">{{ senders[0].amount*1.2}}</span></li>
+          <li><span class="y-amount">{{ senders[0].amount*1.2*0.8}}</span></li>
+          <li><span class="y-amount">{{ senders[0].amount*1.2*0.6}}</span></li>
+          <li><span class="y-amount">{{ senders[0].amount*1.2*0.4}}</span></li>
+          <li><span class="y-amount">{{ senders[0].amount*1.2*0.2}}</span></li>
+          <li><span class="y-amount">{{ senders[0].amount*1.2*0.0}}</span></li>
+        </ul>
+        <div class="bar">
+          <!--  -->
+        </div>
+        {% for response in senders[:6] %}
+        <div class="bar">
+          <div class="title tooltips" data-original-title={{ response.address }} data-toggle="tooltip"
+            data-placement="bottom">{{ response.address[:10]}}..</div>
+          <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
+            data-placement="top">
+            {{ response.amount * 1000 / senders|sum(attribute='amount')}} </div>
+        </div>
+
+
+        {% endfor %}
+      </div>
     </div>
   </div>
-  <!-- /col-md-12 -->
-  <!-- /row -->
+  {% endif %}
+
 </section>
 {% endblock content %}
 {% block scripts %}
+<script>
+  $('#holders').change(function () {
+    if ($(this).is(":checked")) {
+      $('#holders-table').addClass('hidden');
+      $('#holders-chart').removeClass('hidden');
+      $('#holders-title').html('Show Table<br>');
+    } else {
+      $('#holders-chart').addClass('hidden');
+      $('#holders-table').removeClass('hidden');
+      $('#holders-title').html('Show Chart<br>');
+
+    }
+
+  });
+  $('#receivers').change(function () {
+    if ($(this).is(":checked")) {
+      $('#receivers-table').addClass('hidden');
+      $('#receivers-chart').removeClass('hidden');
+      $('#receivers-title').html('Show Table<br>');
+    } else {
+      $('#receivers-chart').addClass('hidden');
+      $('#receivers-table').removeClass('hidden');
+      $('#receivers-title').html('Show Chart<br>');
+
+    }
+  });
+
+  $('#senders').change(function () {
+    if ($(this).is(":checked")) {
+      $('#senders-table').addClass('hidden');
+      $('#senders-chart').removeClass('hidden');
+      $('#senders-title').html('Show Table<br>');
+    } else {
+      $('#senders-chart').addClass('hidden');
+      $('#senders-table').removeClass('hidden');
+      $('#senders-title').html('Show Chart<br>');
+
+    }
+  });
+
+
+</script>
+
 {% endblock scripts %}
