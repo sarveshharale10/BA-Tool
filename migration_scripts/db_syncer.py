@@ -5,6 +5,8 @@ import time
 import os
 import requests
 from datetime import datetime
+from urllib.request import urlopen
+
 
 class DBSnycer():
 	def sync_db(self):
@@ -204,16 +206,18 @@ class VjCoinDbSyncer(DBSnycer):
 				return myURL.read()
 		except:
 			print("Connection Reset")
-			time.sleep(0.25)
+			time.sleep(1)
 
 		while(True):
 			try:
 				myURL = urlopen(url)
+				print(myURL.getcode())
 				if (myURL.getcode() == 200):
 					return myURL.read()
-			except:
+			except(e):
+				print(e)
 				print("Connection Reset")
-				time.sleep(0.1)
+				time.sleep(5)
 		return myURL.read()
 
 	def sync_db(self):
