@@ -504,6 +504,14 @@
         function refresh_db(){
             url = "/api/refresh"
             var posting = $.post(url);
+            posting.done(function (result) {
+                
+                if(result['success']){
+                    alert('Refresh Process Started')
+                }
+                // location.reload();
+
+            });
 
         }
 
