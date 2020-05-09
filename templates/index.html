@@ -77,7 +77,7 @@
             data-placement="bottom">{{ response.address[:10]}}..</div>
           <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
             data-placement="top">
-            {{ response.amount * 1000 / holders|sum(attribute='amount')}} </div>
+            {{ response.amount / (holders[0].amount*1.2 / 300) }} </div>
         </div>
 
 
@@ -157,7 +157,7 @@
             data-placement="bottom">{{ response.address[:10]}}..</div>
           <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
             data-placement="top">
-            {{ response.amount * 1000 / receivers|sum(attribute='amount')}} </div>
+            {{ response.amount / (receivers[0].amount*1.2 / 300) }} </div>
         </div>
 
 
@@ -239,7 +239,7 @@
             data-placement="bottom">{{ response.address[:10]}}..</div>
           <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
             data-placement="top">
-            {{ response.amount * 100 / senders|sum(attribute='amount')}} </div>
+            {{ response.amount / (senders[0].amount*1.2 / 300) }} </div>
         </div>
 
 
