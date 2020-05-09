@@ -66,13 +66,21 @@ def address():
 
 	date_set = False
 	try:
-		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
-		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
+		if current_app.config["db_name"] == "vjcoin":
+			print(1)
+			datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y").timestamp()
+			datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y").timestamp()
+		else:
+			datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
+			datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
+
+
 		date_set = True
 	except:
 		pass
 
-	if(date_set):
+	if(date_set  and address != ''):
+		print('1')
 		result = db.transactions.find({
 						"$and":[
 							{"$and":[{
@@ -90,6 +98,20 @@ def address():
 							}]}
 						]
 					}).limit(node_limit)
+	elif(date_set):
+		print('2')
+		result = db.transactions.find(
+				
+					{"$and":[{
+						"timestamp":{"$gte":datetime_start},
+					},
+					{
+						"timestamp":{"$lte":datetime_end},
+					}
+					]}
+					
+				
+			).limit(node_limit)
 	else:
 		result = transactions.find({"$or":[{"outputs":{"$elemMatch":{"address":address}}},{"inputs":{"$elemMatch":{"address":address}}}]}).limit(node_limit)
 	responses = []
@@ -133,8 +155,13 @@ def track_trace():
 
 	date_set = False
 	try:
-		datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
-		datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
+		if current_app.config["db_name"] == "vjcoin":
+			print(1)
+			datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y").timestamp()
+			datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y").timestamp()
+		else:
+			datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y")
+			datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y")
 		date_set = True
 	except Exception as e:
 		pass
