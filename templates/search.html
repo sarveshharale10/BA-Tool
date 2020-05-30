@@ -142,10 +142,10 @@
 
         if (type == 'wa') {
             url = '/api/address';
-            var posting = $.post(url, { address: $('#value').val(), cluster: $("#cluster").is(":checked"), start: $("#start").val(), end: $("#end").val() });
+            var posting = $.post(url, { address: $('#value').val().trim(), cluster: $("#cluster").is(":checked"), start: $("#start").val(), end: $("#end").val() });
         } else {
             url = '/api/transaction';
-            var posting = $.post(url, { tx_hash: $('#value').val(), cluster: $("#cluster").is(":checked") });
+            var posting = $.post(url, { tx_hash: $('#value').val().trim(), cluster: $("#cluster").is(":checked") });
         }
         alert('Processing Request. Please wait while the request is processed.')
         posting.done(function (result) {

@@ -130,7 +130,7 @@
 
         url = '/api/monitors';
 
-        var api_call = $.post(url, { type: $("#type").val(), value: $("#value").val() });
+        var api_call = $.post(url, { type: $("#type").val().trim(), value: $("#value").val().trim()});
 
         api_call.done(function (result) {
             if (result["success"] == true) {

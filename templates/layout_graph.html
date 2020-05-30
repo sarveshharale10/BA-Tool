@@ -449,7 +449,7 @@
             console.log('change')
             console.log($('#db_val :selected').val());
             console.log($('#limit_num :selected').val());
-            var posting = $.post(url, { db: $('#db_val :selected').val(), limit: $('#limit_num :selected').val() });
+            var posting = $.post(url, { db: $('#db_val :selected').val().trim(), limit: $('#limit_num :selected').val().trim() });
             posting.done(function (result) {
                 console.log('results:' + result)
                 location.reload();

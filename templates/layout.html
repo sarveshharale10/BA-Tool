@@ -31,6 +31,7 @@
     <link href="static/css/style-responsive.css" rel="stylesheet">
     <script src="static/lib/chart-master/Chart.js"></script>
 
+
     <!-- <link rel="stylesheet" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/fontawesome.min.css"> -->
     <style>
@@ -169,6 +170,10 @@
             /* width: 40px;
                 left: -30px; */
 
+        }
+
+        #myModal {
+            z-index: 10000;
         }
     </style>
 
@@ -337,9 +342,86 @@
             <div class="top-menu">
                 <ul class="nav pull-right top-menu">
                     <li><a class="logout" onclick="refresh_db()" style="cursor:pointer;">Refresh</a></li>
+                    <li>
+                        <!-- Button trigger modal -->
+                        <a class="logout" data-toggle="modal" data-target="#myModal" style="cursor:pointer;">
+                            SIGN IN
+                        </a>
+
+                    </li>
                 </ul>
             </div>
+
         </header>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="form-login" action="index.html">
+                    <h2 class="form-login-heading">sign in now</h2>
+                    <div class="login-wrap">
+                        <input type="text" class="form-control" placeholder="User ID" autofocus>
+                        <br>
+                        <input type="password" class="form-control" placeholder="Password">
+                        <label class="checkbox">
+                            <input type="checkbox" value="remember-me"> Remember me
+                            <span class="pull-right">
+                                <a data-toggle="modal" href="login.html#myModal"> Forgot Password?</a>
+                            </span>
+                        </label>
+                        <button class="btn btn-theme btn-block" href="index.html" type="submit"><i
+                                class="fa fa-lock"></i> SIGN IN</button>
+                        <hr>
+                        <div class="registration">
+                            Don't have an account yet?<br />
+                            <a class="" href="#">
+                                Create an account
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Modal -->
+                    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal"
+                        class="modal fade">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title">Forgot Password ?</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Enter your e-mail address below to reset your password.</p>
+                                    <input type="text" name="email" placeholder="Email" autocomplete="off"
+                                        class="form-control placeholder-no-fix">
+                                </div>
+                                <div class="modal-footer">
+                                    <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                                    <button class="btn btn-theme" type="button">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- modal -->
+                </form>
+
+
+                <!-- <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Login</h4>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div> -->
+            </div>
+        </div>
         <!--header end-->
         <!-- **********************************************************************************************************************************************************
         MAIN SIDEBAR MENU
@@ -460,7 +542,7 @@
             console.log('change')
             console.log($('#db_val :selected').val());
             console.log($('#limit_num :selected').val());
-            var posting = $.post(url, { db: $('#db_val :selected').val(), limit: $('#limit_num :selected').val() });
+            var posting = $.post(url, { db: $('#db_val :selected').val().trim(), limit: $('#limit_num :selected').val().trim() });
             posting.done(function (result) {
                 console.log('results:' + result)
                 location.reload();
@@ -480,8 +562,8 @@
             url = "/api/refresh"
             var posting = $.post(url);
             posting.done(function (result) {
-                
-                if(result['success']){
+
+                if (result['success']) {
                     alert('Refresh Process Started')
                 }
                 // location.reload();
