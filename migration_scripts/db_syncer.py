@@ -5,6 +5,8 @@ import time
 import os
 import requests
 from datetime import datetime
+from urllib.request import urlopen
+
 
 class DBSnycer():
 	def sync_db(self):
@@ -195,6 +197,28 @@ class VjCoinDbSyncer(DBSnycer):
 				transactions.insert_one(tx)
 
 				self.check_for_alerts(tx,ba)
+	def get_response(self,url):
+		i = 1
+		success = True
+		try:
+			myURL = urlopen(url)
+			if(myURL.getcode() == 200):
+				return myURL.read()
+		except:
+			print("Connection Reset")
+			time.sleep(1)
+
+		while(True):
+			try:
+				myURL = urlopen(url)
+				print(myURL.getcode())
+				if (myURL.getcode() == 200):
+					return myURL.read()
+			except(e):
+				print(e)
+				print("Connection Reset")
+				time.sleep(5)
+		return myURL.read()
 
 	def sync_db(self):
 		client = MongoClient("mongodb://localhost:27017")
@@ -206,15 +230,16 @@ class VjCoinDbSyncer(DBSnycer):
 		except:
 			block_height = -1
 		block_height += 1
-		response = requests.get('https://explore.vjti-bct.in/info')
-		chain_height = int(response.text.split('<br>')[0].split(':')[-1])
+		response = self.get_response('https://explore.vjti-bct.in/info')
+		chain_height = int(response.decode().split('<br>')[0].split(':')[-1])
 		if (block_height < chain_height):
 			remaining_blocks = chain_height - block_height
 			num_iterations = int (remaining_blocks / 8)
 			remaining_blocks -= num_iterations*8
 			if remaining_blocks > 0:
 				num_iterations += 1
-			dfs0 = pd.read_html('https://explore.vjti-bct.in/explorer', header=None, index_col=0)
+			response = self.get_response('https://explore.vjti-bct.in/explorer')
+			dfs0 = pd.read_html(response, header=None, index_col=0)
 			blocks,transactions = self.process_dfs(dfs0)
 			time.sleep(1)
 			for i in range(1,num_iterations):
@@ -222,7 +247,8 @@ class VjCoinDbSyncer(DBSnycer):
 							time.sleep(1)
 					print(i)
 					url = 'https://explore.vjti-bct.in/explorer?prev={}'.format(i)
-					dfs = pd.read_html(url, header=None, index_col=0)
+					response = self.get_response(url)
+					dfs = pd.read_html(response, header=None, index_col=0)
 					temp_blocks,temp_transactions = self.process_dfs(dfs)
 					blocks = blocks + temp_blocks
 					transactions = transactions + temp_transactions
@@ -240,7 +266,8 @@ class VjCoinDbSyncer(DBSnycer):
 							time.sleep(1)
 					print(index)
 					url = 'https://explore.vjti-bct.in/transaction/{}/{}'.format(row['Block Hash'],row['tx_hash'])
-					dfs = pd.read_html(url, header=None, index_col=0)
+					response = self.get_response(url)
+					dfs = pd.read_html(response, header=None, index_col=0)
 					temp_transactions, temp_receivers = self.process_transaction_dfs(dfs)
 					receivers = receivers + temp_receivers
 					transactions = transactions + temp_transactions

@@ -282,14 +282,30 @@
                             {% for response in config.alerts[:5] %}
                             <li>
                                 <a href="/alerts">
-                                    {% if response.type=='Address' %}
-                                    <span class="label label-success"><i class="fa fa-user"></i></span>
-                                    {% endif %}
-                                    {% if response.type=='Amount' %}
-                                    <span class="label label-success"><i class="fa fa-money"></i></span>
-                                    {% endif %}
-                                    {{ response.value }}
-                                    <span class="small italic">{{response.tx_hash}}</span>
+                                    <div class="row">
+                                        <div class="col-md-2">
+
+                                            {% if response.type=='address' %}
+                                            <span class="label label-success"><i class="fa fa-user"></i></span>
+                                            {% endif %}
+                                            {% if response.type=='amount' %}
+                                            <span class="label label-success"><i class="fa fa-money"></i></span>
+                                            {% endif %}
+
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span style="word-wrap: break-word;">
+                                                Value:{{ response.value [:20] }}..
+                                            </span>
+                                        </div><br>
+                                        <div class="col-md-4">
+                                            <!-- <span class="italic"> -->
+                                            Tx_hash:{{response.tx_hash[:20]}}..
+
+                                        </div>
+
+
+                                    </div>
                                 </a>
                             </li>
                             {% endfor %}
@@ -433,7 +449,7 @@
             console.log('change')
             console.log($('#db_val :selected').val());
             console.log($('#limit_num :selected').val());
-            var posting = $.post(url, { db: $('#db_val :selected').val(), limit: $('#limit_num :selected').val() });
+            var posting = $.post(url, { db: $('#db_val :selected').val().trim(), limit: $('#limit_num :selected').val().trim() });
             posting.done(function (result) {
                 console.log('results:' + result)
                 location.reload();
@@ -488,6 +504,14 @@
         function refresh_db(){
             url = "/api/refresh"
             var posting = $.post(url);
+            posting.done(function (result) {
+                
+                if(result['success']){
+                    alert('Refresh Process Started')
+                }
+                // location.reload();
+
+            });
 
         }
 

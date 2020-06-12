@@ -136,7 +136,7 @@
 
             url = '/api/trace';
 
-            var posting = $.post(url, { address: $('#address').val(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked"), start: $("#start").val(), end: $("#end").val() });
+            var posting = $.post(url, { address: $('#address').val().trim(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked"), start: $("#start").val(), end: $("#end").val() });
             /* Alerts the results */
             alert('Processing Request. Please wait while the request is processed.')
 

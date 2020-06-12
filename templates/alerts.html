@@ -17,8 +17,8 @@
                                 <thead>
                                     <tr class="mt">
                                         <th>Type</th>
-                                        <th style="width: 40%">Value</th>
-                                        <th style="width: 40%" class="hidden-phone">Transaction Hash</th>
+                                        <th style="width: 44%">Value</th>
+                                        <th style="width: 44%" class="hidden-phone">Transaction Hash</th>
                                         <!-- <th class="hidden-phone">Engine version</th>
                                         <th class="hidden-phone">CSS grade</th> -->
                                     </tr>
@@ -27,9 +27,9 @@
                                     {% for response in responses %}
                                     <tr class="gradeX">
                                         <td>{{ response.type }}</td>
-                                        <td style="width: 40% !important; word-wrap: break-word;">{{ response.value }}
+                                        <td style="width: 44% !important; word-wrap: break-word;">{{ response.value }}
                                         </td>
-                                        <td style="width: 40%" class="hidden-phone">{{ response.tx_hash }}</td>
+                                        <td style="width: 44%" class="hidden-phone">{{ response.tx_hash }}</td>
 
                                     </tr>
                                     {% endfor %}
@@ -67,8 +67,8 @@
     function fnFormatDetails(oTable, nTr) {
         var aData = oTable.fnGetData(nTr);
         var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
-        sOut += '<tr><td>Rendering engine:</td><td>' + aData[1] + ' ' + aData[4] + '</td></tr>';
-        sOut += '<tr><td>Link to source:</td><td>Could provide a link here</td></tr>';
+        sOut += '<tr><td>Alert set on:</td><td>' + aData[1] +'</td></tr>';
+        sOut += '<tr><td> Value :</td><td>'+aData[2]+ '</td></tr>';
         sOut += '<tr><td>Extra info:</td><td>And any further details here (images etc)</td></tr>';
         sOut += '</table>';
 
@@ -79,18 +79,18 @@
         /*
          * Insert a 'details' column to the table
          */
-        var nCloneTh = document.createElement('th');
-        var nCloneTd = document.createElement('td');
-        nCloneTd.innerHTML = '<img src="static/lib/advanced-datatable/images/details_open.png">';
-        nCloneTd.className = "center";
+        // var nCloneTh = document.createElement('th');
+        // var nCloneTd = document.createElement('td');
+        // nCloneTd.innerHTML = '<img src="static/lib/advanced-datatable/images/details_open.png">';
+        // nCloneTd.className = "center";
 
-        $('#hidden-table-info thead tr').each(function () {
-            this.insertBefore(nCloneTh, this.childNodes[0]);
-        });
+        // $('#hidden-table-info thead tr').each(function () {
+        //     this.insertBefore(nCloneTh, this.childNodes[0]);
+        // });
 
-        $('#hidden-table-info tbody tr').each(function () {
-            this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
-        });
+        // $('#hidden-table-info tbody tr').each(function () {
+        //     this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
+        // });
 
         /*
          * Initialse DataTables, with no sorting on the 'details' column
@@ -130,7 +130,7 @@
 
         url = '/api/monitors';
 
-        var api_call = $.post(url, { type: $("#type").val(), value: $("#value").val() });
+        var api_call = $.post(url, { type: $("#type").val().trim(), value: $("#value").val().trim()});
 
         api_call.done(function (result) {
             if (result["success"] == true) {

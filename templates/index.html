@@ -11,16 +11,16 @@
   <div class="col-lg-6 mt">
     <div class="content-panel">
       <div class="row">
-        <div class="col-md-7 col-xs-8">
+        <div class="col-md-7 col-xs-4">
           <h4><i class="fa fa-angle-right"></i> Top Holders</h4>
-          <div class="text-center">
+<!--          <div class="text-center">
             <div class="btn-group">
               <button type="button" class="btn btn-warning">1 Week</button>
               <button type="button" class="btn btn-default">1 Month</button>
               <button type="button" class="btn btn-default">1 Year</button>
               <button type="button" class="btn btn-default">All Time</button>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="col-md-5 col-xs-4">
           <div class="text-center">
@@ -39,29 +39,29 @@
         </div>
       </div>
 
-      <table class="table table-hover" id="holders-table">
+      <table class="table table-hover" style="table-layout:fixed;" id="holders-table">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Wallet Address</th>
-            <th>Amount</th>
-            <th>Percentage</th>
+            <th style="width:6%">#</th>
+            <th style="width:62%">Wallet Address</th>
+            <th style="width:16%;">Amount</th>
+            <th style="width:16%;">Percentage</th>
           </tr>
         </thead>
         <tbody>
           {% for response in holders %}
           <tr>
-            <td>{{ response.rank }}</td>
-            <td>{{ response.address }}</td>
-            <td>{{ response.amount }}</td>
-            <td>{{ "%.2f"|format(response.amount * 100 / holders|sum(attribute='amount'))}}%</td>
+            <td style="width:6%">{{ response.rank }}</td>
+            <td style="width: 62%">{{ response.address }}</td>
+            <td style="width:16%;">{{ response.amount }}</td>
+            <td style="width:16%;">{{ "%.2f"|format(response.amount * 100 / holders|sum(attribute='amount'))}}%</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       <div class="custom-bar-chart hidden" style="margin: 25px;" id="holders-chart">
         <ul class="y-axis">
-          <li><span class="y-amount">{{ holders[0].amount*1.2}}</span></li>
+          <li><span class="y-amount">{{ holders[0].amount*1.2 }}</span></li>
           <li><span class="y-amount">{{ holders[0].amount*1.2*0.8}}</span></li>
           <li><span class="y-amount">{{ holders[0].amount*1.2*0.6}}</span></li>
           <li><span class="y-amount">{{ holders[0].amount*1.2*0.4}}</span></li>
@@ -77,7 +77,7 @@
             data-placement="bottom">{{ response.address[:10]}}..</div>
           <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
             data-placement="top">
-            {{ response.amount * 1000 / holders|sum(attribute='amount')}} </div>
+            {{ response.amount / (holders[0].amount*1.2 / 300) }} </div>
         </div>
 
 
@@ -91,16 +91,16 @@
   <div class="col-lg-6 mt">
     <div class="content-panel">
       <div class="row">
-        <div class="col-md-7 col-xs-8">
+        <div class="col-md-7 col-xs-4">
           <h4><i class="fa fa-angle-right"></i> Top Receivers</h4>
-          <div class="text-center">
+<!--          <div class="text-center">
             <div class="btn-group">
               <button type="button" class="btn btn-warning">1 Week</button>
               <button type="button" class="btn btn-default">1 Month</button>
               <button type="button" class="btn btn-default">1 Year</button>
               <button type="button" class="btn btn-default">All Time</button>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="col-md-5 col-xs-4">
           <div class="text-center">
@@ -119,34 +119,34 @@
         </div>
       </div>
 
-      <table class="table table-hover" id="receivers-table">
+      <table class="table table-hover" style="table-layout:fixed;" id="receivers-table">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Wallet Address</th>
-            <th>Amount</th>
-            <th>Percentage</th>
+            <th style="width:6%"> #</th>
+            <th style="width: 62%"> Wallet Address</th>
+            <th style="width:16%;"> Amount</th>
+            <th style="width:16%;"> Percentage</th>
           </tr>
         </thead>
         <tbody>
           {% for response in receivers %}
           <tr>
-            <td>{{ response.rank }}</td>
-            <td>{{ response.address }}</td>
-            <td>{{ response.amount }}</td>
-            <td>{{ "%.2f"|format(response.amount * 100 / receivers|sum(attribute='amount'))}}%</td>
+            <td style="width:6%"> {{ response.rank }}</td>
+            <td style="width: 62%"> {{ response.address }}</td>
+            <td style="width:16%;"> {{ response.amount }}</td>
+            <td style="width:16%;"> {{ "%.2f"|format(response.amount * 100 / receivers|sum(attribute='amount'))}}%</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       <div class="custom-bar-chart hidden" style="margin: 25px;" id="receivers-chart">
         <ul class="y-axis">
-          <li><span class="y-amount">{{ receivers[0].amount*1.2}}</span></li>
-          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.8}}</span></li>
-          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.6}}</span></li>
-          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.4}}</span></li>
-          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.2}}</span></li>
-          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.0}}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2 }}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.8 }}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.6 }}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.4 }}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.2 }}</span></li>
+          <li><span class="y-amount">{{ receivers[0].amount*1.2*0.0 }}</span></li>
         </ul>
         <div class="bar">
           <!--  -->
@@ -157,7 +157,7 @@
             data-placement="bottom">{{ response.address[:10]}}..</div>
           <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
             data-placement="top">
-            {{ response.amount * 1000 / receivers|sum(attribute='amount')}} </div>
+            {{ response.amount / (receivers[0].amount*1.2 / 300) }} </div>
         </div>
 
 
@@ -173,16 +173,16 @@
   <div class="col-lg-6 mt">
     <div class="content-panel">
       <div class="row">
-        <div class="col-md-7 col-xs-8">
+        <div class="col-md-7 col-xs-4">
           <h4><i class="fa fa-angle-right"></i> Top senders</h4>
-          <div class="text-center">
+<!--          <div class="text-center">
             <div class="btn-group">
               <button type="button" class="btn btn-warning">1 Week</button>
               <button type="button" class="btn btn-default">1 Month</button>
               <button type="button" class="btn btn-default">1 Year</button>
               <button type="button" class="btn btn-default">All Time</button>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="col-md-5 col-xs-4">
           <div class="text-center">
@@ -201,22 +201,22 @@
         </div>
       </div>
 
-      <table class="table table-hover" id="senders-table">
+      <table class="table table-hover" style="table-layout:fixed;" id="senders-table">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Wallet Address</th>
-            <th>Amount</th>
-            <th>Percentage</th>
+            <th style="width:6%">#</th>
+            <th style="width:62%">Wallet Address</th>
+            <th style="width:16%;">Amount</th>
+            <th style="width:16%;">Percentage</th>
           </tr>
         </thead>
         <tbody>
           {% for response in senders %}
           <tr>
-            <td>{{ response.rank }}</td>
-            <td>{{ response.address }}</td>
-            <td>{{ response.amount }}</td>
-            <td>{{ "%.2f"|format(response.amount * 100 / senders|sum(attribute='amount'))}}%</td>
+            <td style="width:6%">{{ response.rank }}</td>
+            <td style="width: 62%">{{ response.address }}</td>
+            <td style="width:16%;">{{ response.amount }}</td>
+            <td style="width:16%;">{{ "%.2f"|format(response.amount * 100 / senders|sum(attribute='amount'))}}%</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -239,7 +239,7 @@
             data-placement="bottom">{{ response.address[:10]}}..</div>
           <div class="value tooltips" data-original-title={{ response.amount}} data-toggle="tooltip"
             data-placement="top">
-            {{ response.amount * 1000 / senders|sum(attribute='amount')}} </div>
+            {{ response.amount / (senders[0].amount*1.2 / 300) }} </div>
         </div>
 
 

@@ -42,13 +42,13 @@
                     <div class="content-panel" style="box-shadow: none !important;">
                         <div class="adv-table">
                             <table cellpadding="0" cellspacing="0" class="display table table-bordered"
-                                id="hidden-table-info">
+                                id="hidden-table-info" style="table-layout:fixed; width: 100% !important;">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Delete</th>
-                                        <th>Type</th>
-                                        <th>Value</th>
-                                        <th class="hidden-phone">Number of Alerts</th>
+                                        <th  class="text-center" style="width: 12%">Delete</th>
+                                        <th style="width: 12% !important;">Type</th>
+                                        <th style="width: 64% !important;">Value</th>
+                                        <th class="hidden-phone" style="width: 12%">Number of Alerts</th>
                                         <!-- <th class="hidden-phone">Engine version</th> 
                                                     <th class="hidden-phone">CSS grade</th> -->
                                     </tr>
@@ -56,13 +56,13 @@
                                 <tbody>
                                     {% for response in responses %}
                                     <tr class="gradeA">
-                                        <td class="center">
+                                        <td  class="center" style="width: 12%">
                                             <span class="delete-icon" style="cursor: pointer;"
                                                 data-id={{response.id}}><i class="fa fa-trash-o "></i></span>
                                         </td>
-                                        <td>{{ response.type }}</td>
-                                        <td>{{ response.value }}</td>
-                                        <td class="hidden-phone">{{ response.count }}</td>
+                                        <td style="width: 12% !important;" >{{ response.type }}</td>
+                                        <td style="width: 64% !important;" >{{ response.value }}</td>
+                                        <td class="hidden-phone" style="width: 12%">{{ response.count }}</td>
                                         <!-- <td class="center hidden-phone">.*</td> -->
                                         <!-- <td class="center hidden-phone">.*</td> -->
                                     </tr>
@@ -176,7 +176,7 @@
 
         url = '/api/monitors';
 
-        var api_call = $.post(url, { type: $("#type").val(), value: $("#value").val() });
+        var api_call = $.post(url, { type: $("#type").val().trim(), value: $("#value").val().trim() });
 
         api_call.done(function (result) {
             if (result["success"] == true) {

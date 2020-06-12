@@ -4,6 +4,8 @@ import os
 from pymongo import MongoClient
 from tqdm import tqdm
 import requests
+from urllib.request import urlopen
+
 
 def process_dfs(dfs):
 	block_list = []
@@ -88,6 +90,22 @@ def insert_df_mongo(self,df,block_height):
 			tx["inputs"].append(record)
 			transactions.insert_one(tx)
 
+def get_response(url):
+	i = 1
+
+	while(response.status_code != 200):
+		try:
+			myURL = urlopen(url)
+		except:
+			time.sleep(10)
+			
+		# response = requests.get(url)
+		i += 1
+		if i % 4 == 0:
+			time.sleep(1)
+	return myURL.read()
+
+
 def sync_chain():
 	client = MongoClient("mongodb://localhost:27017")
 	ba = client["vjcoin"]
@@ -106,15 +124,18 @@ def sync_chain():
 		remaining_blocks -= num_iterations*8
 		if remaining_blocks > 0:
 			num_iterations += 1
-		dfs0 = pd.read_html('https://explore.vjti-bct.in/explorer', header=None, index_col=0)
+
+		response = get_response('https://explore.vjti-bct.in/explorer')
+		dfs0 = pd.read_html(response, header=None, index_col=0)
 		blocks,transactions = process_dfs(dfs0)
 		time.sleep(1)
 		for i in range(1,num_iterations):
 				if i % 4 == 0:
-						time.sleep(1)
+					time.sleep(1)
 				print(i)
 				url = 'https://explore.vjti-bct.in/explorer?prev={}'.format(i)
-				dfs = pd.read_html(url, header=None, index_col=0)
+				response = get_response(url)
+				dfs = pd.read_html(response, header=None, index_col=0)
 				temp_blocks,temp_transactions = process_dfs(dfs)
 				blocks = blocks + temp_blocks
 				transactions = transactions + temp_transactions
@@ -132,7 +153,8 @@ def sync_chain():
 						time.sleep(1)
 				print(index)
 				url = 'https://explore.vjti-bct.in/transaction/{}/{}'.format(row['Block Hash'],row['tx_hash'])
-				dfs = pd.read_html(url, header=None, index_col=0)
+				response = get_response(url)
+				dfs = pd.read_html(response, header=None, index_col=0)
 				temp_transactions, temp_receivers = process_transaction_dfs(dfs)
 				receivers = receivers + temp_receivers
 				transactions = transactions + temp_transactions
