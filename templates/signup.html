@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Login V18</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="static/images/icons/favicon.ico" />
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/bootstrap/css/bootstrap.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/animate/animate.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/css-hamburgers/hamburgers.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/animsition/css/animsition.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/select2/select2.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/daterangepicker/daterangepicker.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/css/util.css">
+	<link rel="stylesheet" type="text/css" href="static/css/main.css">
+	<!--===============================================================================================-->
+</head>
+
+<body style="background-color: #666666;">
+
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-form validate-form">
+					<span class="login100-form-title p-b-43">
+						Sign Up
+					</span>
+
+
+					<div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+						<input class="input100" type="text" name="email" id="email">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Email</span>
+					</div>
+
+
+					<div class="wrap-input100 validate-input" data-validate="Password is required">
+						<input class="input100" type="password" name="pass" id="pass">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Password</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate="Password is required">
+						<input class="input100" type="password" name="confirmPass" id="confirmPass">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Confirm Password</span>
+					</div>
+
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" id="#submitBtn" onclick="signup()">
+							Sign Up
+						</button>
+					</div>
+
+					<div class="text-center p-t-46 p-b-20">
+						<span class="txt2">
+							<a href="/login">
+								If already a user click here to sign in
+							</a>
+						</span>
+					</div>
+				</div>
+
+				<div class="login100-more" style="background-image: url('static/images/bg-01.jpg');">
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+	<!--===============================================================================================-->
+	<script src="static/vendor/jquery/jquery-3.2.1.min.js"></script>
+	<script>
+		function signup() {
+			console.log('Hello');
+			data = {};
+			data["email"] = $("#email").val();
+			data["password"] = $("#pass").val().trim();
+			data["confirm_password"] = $("#confirmPass").val().trim();
+			console.log('Submitting')
+
+			if (data['password'] == data['confirm_password']) {
+
+
+
+				$.ajax({
+					type: "POST",
+					url: "/signup",
+					data: data,
+					success: function (data) {
+						console.log(data);
+						if (data == 2) {
+							alert('Email address already registered')
+						} else if (data == 1) {
+							window.location.href = "/login"
+						} else if (data == 0) {
+							alert('You seem to be a new user, kindly register first..')
+							window.location.href = "/register";
+						}
+						else {
+							alert('Incorrect credentials')
+
+						}
+					}
+				});
+			}
+			else {
+				alert('Passwords do not match');
+			}
+		};
+
+
+
+	</script>
+
+	<!--===============================================================================================-->
+	<script src="static/vendor/animsition/js/animsition.min.js"></script>
+	<!--===============================================================================================-->
+	<script src="static/vendor/bootstrap/js/popper.js"></script>
+	<script src="static/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<!--===============================================================================================-->
+	<script src="static/vendor/select2/select2.min.js"></script>
+	<!--===============================================================================================-->
+	<script src="static/vendor/daterangepicker/moment.min.js"></script>
+	<script src="static/vendor/daterangepicker/daterangepicker.js"></script>
+	<!--===============================================================================================-->
+	<script src="static/vendor/countdowntime/countdowntime.js"></script>
+	<!--===============================================================================================-->
+	<script src="static/js/main.js"></script>
+
+
+
+
+</body>
+
+</html>

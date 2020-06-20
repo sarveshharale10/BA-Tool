@@ -1,30 +1,36 @@
 from . import api
 from .utils import *
-from flask import request,current_app
+from flask import request,current_app,session
 from .track_trace import *
 from datetime import datetime
 from multiprocessing import Process
 
 def get_monitors(db):
-	result = db.monitors.find()
-	responses = []
-	for row in result:
-		response = {}
-		response["id"] = row["_id"]
-		response["type"] = row["type"]
-		response["value"] = row["value"]
-		response["count"] = len(row["alerts"])
-		responses.append(response)
+	print(session)
+	if session['logged_in']:
+		result = db.monitors.find({"user_id":session['id']})
+		responses = []
+		for row in result:
+			response = {}
+			response["id"] = row["_id"]
+			response["type"] = row["type"]
+			response["value"] = row["value"]
+			response["count"] = len(row["alerts"])
+			responses.append(response)
+	else:
+		responses = []
 	return responses
 
 def get_alerts(db):
-	collection = db["monitors"]
-
-	result = collection.find()
 	responses = []
-	for row in result:
-		for alert in row["alerts"]:
-			responses.append({"type":row["type"],"value":row["value"],"tx_hash":alert["tx_hash"]})
+
+	if session['logged_in']:
+		collection = db["monitors"]
+
+		result = collection.find({'user_id':session['id']})
+		for row in result:
+			for alert in row["alerts"]:
+				responses.append({"type":row["type"],"value":row["value"],"tx_hash":alert["tx_hash"]})
 
 	return responses
 
@@ -216,12 +222,14 @@ def monitors():
 	elif(request.method == "POST"):
 		monitor_type = request.values["type"]
 		value = request.values["value"]
+		user_id = session["id"]
 		doc_id = f"{monitor_type}-{value}"
 		doc = {
 			"_id":doc_id,
 			"type":monitor_type,
 			"value":value,
-			"alerts":[]
+			"alerts":[],
+			"user_id":user_id
 		}
 		collection.insert(doc)
 		return jsonify(success=True)

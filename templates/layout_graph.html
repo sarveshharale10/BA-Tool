@@ -30,6 +30,7 @@
         * {
             word-wrap: break-word !important;
         }
+
         .fullscreen {
             position: absolute;
             bottom: 25px;
@@ -204,6 +205,8 @@
                                                     {% endif %}>Bitcoin BTC</option>
                                                 <option value="vjcoin" {% if config.db=='vjcoin' %} selected="selected"
                                                     {% endif %}>VJCoin</option>
+                                                <option value="ethereum" {% if config.db=='ethereum' %}
+                                                    selected="selected" {% endif %}>Ethereum</option>
                                             </select>
                                         </div>
                                     </a>
@@ -266,6 +269,8 @@
                     </li>
                     <!-- inbox dropdown end -->
                     <!-- notification dropdown start-->
+                    {% if config.logged_in %}
+
                     <li id="header_notification_bar" class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle">
                             <i class="fa fa-bell-o"></i>
@@ -314,13 +319,35 @@
                             </li>
                         </ul>
                     </li>
+
+                    {% endif %}
+
                     <!-- notification dropdown end -->
                 </ul>
                 <!--  notification end -->
             </div>
             <div class="top-menu">
                 <ul class="nav pull-right top-menu">
-                     <li><a class="logout" onclick="refresh_db()" style="cursor:pointer;">Refresh</a></li>
+                    <li><a class="logout" onclick="refresh_db()" style="cursor:pointer;">Refresh</a></li>
+                    <li>
+
+                        {% if not config.logged_in %}
+
+                        <a class="logout" style="cursor:pointer;" href="/login">
+                            LOGIN
+                        </a>
+
+                        {% endif %}
+                        {% if config.logged_in %}
+
+                        <a class="logout" style="cursor:pointer;" href="/logout">
+                            LOGOUT
+                        </a>
+
+                        {% endif %}
+
+
+                    </li>
                 </ul>
             </div>
         </header>
@@ -501,12 +528,12 @@
         }
         getURL()
 
-        function refresh_db(){
+        function refresh_db() {
             url = "/api/refresh"
             var posting = $.post(url);
             posting.done(function (result) {
-                
-                if(result['success']){
+
+                if (result['success']) {
                     alert('Refresh Process Started')
                 }
                 // location.reload();

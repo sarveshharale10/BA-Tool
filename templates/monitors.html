@@ -1,7 +1,12 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
+
+
 <section class="wrapper">
+
+    {% if config.logged_in %}
     <div class="row mt">
         <div class="col-lg-12">
             <div class="form-panel">
@@ -45,7 +50,7 @@
                                 id="hidden-table-info" style="table-layout:fixed; width: 100% !important;">
                                 <thead>
                                     <tr>
-                                        <th  class="text-center" style="width: 12%">Delete</th>
+                                        <th class="text-center" style="width: 12%">Delete</th>
                                         <th style="width: 12% !important;">Type</th>
                                         <th style="width: 64% !important;">Value</th>
                                         <th class="hidden-phone" style="width: 12%">Number of Alerts</th>
@@ -56,12 +61,12 @@
                                 <tbody>
                                     {% for response in responses %}
                                     <tr class="gradeA">
-                                        <td  class="center" style="width: 12%">
+                                        <td class="center" style="width: 12%">
                                             <span class="delete-icon" style="cursor: pointer;"
                                                 data-id={{response.id}}><i class="fa fa-trash-o "></i></span>
                                         </td>
-                                        <td style="width: 12% !important;" >{{ response.type }}</td>
-                                        <td style="width: 64% !important;" >{{ response.value }}</td>
+                                        <td style="width: 12% !important;">{{ response.type }}</td>
+                                        <td style="width: 64% !important;">{{ response.value }}</td>
                                         <td class="hidden-phone" style="width: 12%">{{ response.count }}</td>
                                         <!-- <td class="center hidden-phone">.*</td> -->
                                         <!-- <td class="center hidden-phone">.*</td> -->
@@ -78,12 +83,20 @@
     </div>
 
     <!-- /row -->
+    {% endif %}
+
+    {% if not config.logged_in %}
+
+    <h2> Please login to use this functionality
+    </h2>
+
+    {% endif %}
 </section>
 <!-- /wrapper -->
-</section>
-<!-- /MAIN CONTENT -->
-<!--main content end-->
-</section>
+
+
+
+
 {% endblock content %}
 {% block scripts %}
 <!--script for Monitors page-->
@@ -159,7 +172,7 @@
         $.ajax({
             url: '/api/monitors',
             type: 'DELETE',
-            data: {id:$(this).attr('data-id')},
+            data: { id: $(this).attr('data-id') },
             success: function (result) {
                 window.location.href = '/monitors';
                 // Do something with the result
