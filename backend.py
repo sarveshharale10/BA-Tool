@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from flask import Flask,jsonify, render_template, request, redirect,json, session
+from flask import Flask,jsonify, render_template, request, redirect,json, session, Response
 from api import api
 from api.routes import get_monitors,get_alerts,top_holders,top_receivers,top_senders
 from migration_scripts.db_syncer import *
@@ -114,7 +114,9 @@ def alert():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
-		return render_template('login.html')
+		response = Response(render_template('login.html'))
+		response.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')   
+		return response
 	else:
 
 		email = request.form['email']
