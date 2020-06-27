@@ -32,28 +32,28 @@
     <script src="static/lib/chart-master/Chart.js"></script>
 
     <meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" type="image/png" href="static/images/icons/favicon.ico" />
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/vendor/bootstrap/css/bootstrap.min.css"> -->
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/fonts/font-awesome-4.7.0/css/font-awesome.min.css"> -->
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/fonts/Linearicons-Free-v1.0.0/icon-font.min.css"> -->
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/vendor/animate/animate.css"> -->
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/vendor/css-hamburgers/hamburgers.min.css"> -->
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/vendor/animsition/css/animsition.min.css"> -->
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/vendor/select2/select2.min.css"> -->
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/vendor/daterangepicker/daterangepicker.css"> -->
-	<!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="static/css/util.css"> -->
-	<link rel="stylesheet" type="text/css" href="static/css/main.css">
-	<!--===============================================================================================-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="static/images/icons/favicon.ico" />
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/vendor/bootstrap/css/bootstrap.min.css"> -->
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/fonts/font-awesome-4.7.0/css/font-awesome.min.css"> -->
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/fonts/Linearicons-Free-v1.0.0/icon-font.min.css"> -->
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/vendor/animate/animate.css"> -->
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/vendor/css-hamburgers/hamburgers.min.css"> -->
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/vendor/animsition/css/animsition.min.css"> -->
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/vendor/select2/select2.min.css"> -->
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/vendor/daterangepicker/daterangepicker.css"> -->
+    <!--===============================================================================================-->
+    <!-- <link rel="stylesheet" type="text/css" href="static/css/util.css"> -->
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <!--===============================================================================================-->
 
 
 
@@ -376,7 +376,7 @@
                 <ul class="nav pull-right top-menu">
                     <li><a class="logout" onclick="refresh_db()" style="cursor:pointer;">Refresh</a></li>
                     <li>
-                        
+
                         {% if not config.logged_in %}
 
                         <a class="logout" style="cursor:pointer;" href="/login">
@@ -387,7 +387,7 @@
                         {% if config.logged_in %}
 
                         <a class="logout" onclick="logout()" style="cursor:pointer;">
-                                LOGOUT
+                            LOGOUT
                         </a>
 
                         {% endif %}
@@ -556,6 +556,12 @@
                 if (result['success']) {
                     alert('Logout Successfully')
                 }
+                history.pushState(null, document.title, location.href);
+                history.back();
+                history.forward();
+                window.onpopstate = function () {
+                    history.go(1);
+                };
                 location.reload();
 
             });
