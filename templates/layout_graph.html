@@ -340,9 +340,10 @@
                         {% endif %}
                         {% if config.logged_in %}
 
-                        <a class="logout" style="cursor:pointer;" href="/logout">
+                        <a class="logout" onclick="logout()" style="cursor:pointer;">
                             LOGOUT
                         </a>
+
 
                         {% endif %}
 
@@ -537,6 +538,25 @@
                     alert('Refresh Process Started')
                 }
                 // location.reload();
+
+            });
+
+        }
+        function logout() {
+            url = "/logout"
+            var posting = $.post(url);
+            posting.done(function (result) {
+
+                if (result['success']) {
+                    alert('Logout Successfully')
+                }
+                history.pushState(null, document.title, location.href);
+                history.back();
+                history.forward();
+                window.onpopstate = function () {
+                    history.go(1);
+                };
+                location.reload();
 
             });
 
