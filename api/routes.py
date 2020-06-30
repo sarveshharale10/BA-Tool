@@ -161,7 +161,7 @@ def track_trace():
 
 	date_set = False
 	try:
-		if current_app.config["db_name"] == "vjcoin":
+		if current_app.config["db_name"] in ["vjcoin","ethereum"]:
 			print(1)
 			datetime_start = datetime.strptime(request.values["start"],"%d-%m-%Y").timestamp()
 			datetime_end = datetime.strptime(request.values["end"],"%d-%m-%Y").timestamp()
