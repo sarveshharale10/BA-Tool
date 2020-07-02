@@ -561,6 +561,12 @@
             });
 
         }
+        if({{ config.cluster|safe }}){
+            
+            $('.switching').css('display', 'inline-block');
+        }else{
+            $('.switching').css('display', 'none');
+        }
 
     </script>
     {% block scripts %}
