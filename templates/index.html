@@ -218,6 +218,9 @@
 <!-- <script src='https://cdnjs.com/libraries/Chart.js'></script> -->
 
 <script>
+  $("#holders").prop("checked", false);
+  $("#receivers").prop("checked", false);
+  $("#senders").prop("checked", false);
   function truncate(str, n) {
     return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
   };

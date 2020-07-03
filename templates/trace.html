@@ -16,7 +16,7 @@
                                     <div class="form-group">
                                         <label class="sr-only" for="exampleInputEmail2">Address</label>
                                         <input type="text" class="form-control" id="address"
-                                            placeholder="Enter Address">
+                                            placeholder="Enter Address" required>
                                     </div>
 
                                 </div>
@@ -24,7 +24,7 @@
                                     <div class="form-group">
                                         <label class="sr-only" for="exampleInputPassword2">Hop Count</label>
                                         <input type="text" class="form-control" id="hop_count"
-                                            placeholder="Enter Hop Count">
+                                            placeholder="Enter Hop Count" required>
                                     </div>
 
                                 </div>
@@ -101,7 +101,8 @@
         </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:350000 !important;">
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+        style="z-index:350000 !important;">
         <div class="modal-dialog" style="z-index:350000 !important;">
             <div class="modal-content" style="z-index:350000 !important;">
                 <div class="modal-header" style="z-index:350000 !important;">
@@ -128,6 +129,26 @@
         function set_clusters(cluster) {
             cluster_list = cluster;
         }
+
+        function validate(address, count) {
+            if (address) {
+                if (count) {
+                    if (address.length > 10) {
+                        console.log(parseInt(count));
+                        if (parseInt(count)) {
+                            return true;
+                        }
+                        alert('Count must be a numeric value. Please try again')
+                        return false
+                    }
+                    alert('Incorrect Address. Please check the address value')
+                    return false
+                }
+            }
+            alert('Address and Hop Count are mandatory fields');
+            return false;
+        }
+
         /* attach a submit handler to the form */
         $("#graph").submit(function (event) {
 
@@ -136,78 +157,88 @@
 
             url = '/api/trace';
 
-            var posting = $.post(url, { address: $('#address').val().trim(), hop_count: $('#hop_count').val(), cluster: $("#cluster").is(":checked"), start: $("#start").val(), end: $("#end").val() });
-            /* Alerts the results */
-            alert('Processing Request. Please wait while the request is processed.')
+            var address = $('#address').val().trim();
+            var value = $('#hop_count').val();
+            value = parseInt(value);
 
-            posting.done(function (result) {
-                clusters = []
-                dict = {}
-                for (i = 0; i < result['nodes'].length; i++) {
-                    if (result['nodes'][i]['labels'][0] == "Cluster") {
-                        cluster_id = result['nodes'][i]['id'];
-                        dict[cluster_id] = (result['nodes'][i]["addresses"]);
-                        clusters.push(dict);
+            if (validate(address, value)) {
+                var posting = $.post(url, { address: address, hop_count: value, cluster: $("#cluster").is(":checked"), start: $("#start").val(), end: $("#end").val() });
+                /* Alerts the results */
+                alert('Processing Request. Please wait while the request is processed.')
 
-                    }
-                }
-                set_clusters(dict);
-                data = {
-                    "results": [{
-                        "data": [{ "graph": result }]
-                    }],
-                    "errors": []
-                }
-                if ((result['nodes'].length) > 0) {
-                    $('#display-graph').css('display', 'block');
-                    console.log(result['nodes']);
-                }
-                else {
-                    $('#display-graph').css('display', 'none');
-                    alert('No resut found.')
-                }
-                console.log('Result' + result);
-                var neo4jd3 = new Neo4jd3('#neo4jd3', {
-                    minCollision: 60,
-                    neo4jData: data,
-                    nodeRadius: 25,
-                    zoomFit: false
-                });
-                $('.node').click(function () {
-                    // console.log('Click');
-                    $("a.cluster").removeAttr("href");
-                    $("a.cluster").css("cursor", "pointer");
-                    $("a.class").removeAttr("href");
-                    $('.cluster').click(function (event) {
+                posting.done(function (result) {
+                    clusters = []
+                    dict = {}
+                    for (i = 0; i < result['nodes'].length; i++) {
+                        if (result['nodes'][i]['labels'][0] == "Cluster") {
+                            cluster_id = result['nodes'][i]['id'];
+                            dict[cluster_id] = (result['nodes'][i]["addresses"]);
+                            clusters.push(dict);
 
-                        event.preventDefault();
-                        $(this).text().split('"')[1]
-                        $('#myModal').modal({
-                            show: 'true'
-                        });
-
-                        console.log('Clusters');
-
-                        var data = 'Cluster Name:' + $(this).text().split('"')[1];
-                        var addreesses = cluster_list[$(this).text().split('"')[1]];
-                        body = "<strong> Address List </strong> <br>"
-                        if (addreesses.length > 1) {
-                            body += "<ul>";
-                            for (i = 0; i < addreesses.length; i++) {
-                                body += "<li>" + addreesses[i] + "</li>"
-
-                            }
-                            body += "</ul>"
-                        } else {
-                            body += addreesses[0]
                         }
-
-                        $(".modal-title").text(data);
-                        $(".modal-body").html(body);
+                    }
+                    set_clusters(dict);
+                    data = {
+                        "results": [{
+                            "data": [{ "graph": result }]
+                        }],
+                        "errors": []
+                    }
+                    if ((result['nodes'].length) > 0) {
+                        $('#display-graph').css('display', 'block');
+                        console.log(result['nodes']);
+                    }
+                    else {
+                        $('#display-graph').css('display', 'none');
+                        alert('No resut found.')
+                    }
+                    console.log('Result' + result);
+                    var neo4jd3 = new Neo4jd3('#neo4jd3', {
+                        minCollision: 60,
+                        neo4jData: data,
+                        nodeRadius: 25,
+                        zoomFit: false
                     });
-                })
+                    $('.node').click(function () {
+                        // console.log('Click');
+                        $("a.cluster").removeAttr("href");
+                        $("a.cluster").css("cursor", "pointer");
+                        $("a.class").removeAttr("href");
+                        $('.cluster').click(function (event) {
 
-            });
+                            event.preventDefault();
+                            $(this).text().split('"')[1]
+                            $('#myModal').modal({
+                                show: 'true'
+                            });
+
+                            console.log('Clusters');
+
+                            var data = 'Cluster Name:' + $(this).text().split('"')[1];
+                            var addreesses = cluster_list[$(this).text().split('"')[1]];
+                            body = "<strong> Address List </strong> <br>"
+                            if (addreesses.length > 1) {
+                                body += "<ul>";
+                                for (i = 0; i < addreesses.length; i++) {
+                                    body += "<li>" + addreesses[i] + "</li>"
+
+                                }
+                                body += "</ul>"
+                            } else {
+                                body += addreesses[0]
+                            }
+
+                            $(".modal-title").text(data);
+                            $(".modal-body").html(body);
+                        });
+                    })
+
+                });
+
+            }
+
+
+
         });
 
     </script>
