@@ -44,7 +44,7 @@
           <tr>
             <th style="width:6%">#</th>
             <th style="width:62%">Wallet Address</th>
-            <th style="width:16%;">Amount</th>
+            <th style="width:16%;">Amount (in {{config.currency}})</th>
             <!-- <th style="width:16%;">Percentage</th> -->
           </tr>
         </thead>
@@ -123,7 +123,9 @@
           <tr>
             <th style="width:6%"> #</th>
             <th style="width: 62%"> Wallet Address</th>
-            <th style="width:16%;"> Amount</th>
+            <th style="width:16%;"> Amount (in {{config.currency}})
+            
+            </th>
             <!-- <th style="width:16%;"> Percentage</th> -->
           </tr>
         </thead>
@@ -184,7 +186,7 @@
           <tr>
             <th style="width:6%">#</th>
             <th style="width:62%">Wallet Address</th>
-            <th style="width:16%;">Amount</th>
+            <th style="width:16%;">Amount (in {{config.currency}})</th>
             <!-- <th style="width:16%;">Percentage</th> -->
           </tr>
         </thead>
@@ -219,6 +221,9 @@
   function truncate(str, n) {
     return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
   };
+  function break_text(str, n) {
+    return (str.length > n) ? str.slice(0, n - 1) + '<br>' + str.slice(n, 2*n - 1) : str;
+  };
   function generate_bar_plot(data, holder_id,color) {
 
     add = []
@@ -226,11 +231,13 @@
     add_text = []
     for (i in data) {
       // console.log(i)
-      add.push(truncate(data[i]['address'], 8));
-      add_text.push(data[i]['address']);
+      add.push(1+parseInt(i));
+      add_text.push(break_text(data[i]['address'],64));
       val.push(data[i]['amount']);
     }
-    console.log(val)
+    var avg = val.reduce((a,v,i)=>(a*i+v)/(i+1));
+    var median = val[4];
+    console.log(val,add)
     var data = [{
       y: val,
       x: add,
@@ -238,11 +245,15 @@
       text: add_text,
       type: 'bar',
       marker: {color: color},
+      
     }];
 
     var layout = {
       height: 400,
-      width: 568
+      width: 568,
+      yaxis:{
+        range:[0,median*6]
+      }
     };
 
     Plotly.newPlot(holder_id, data, layout);

@@ -34,13 +34,15 @@ db.alerts.aggregate({
 });
 '''
 canCluster = {"ba":'true',"vjcoin":'false',"ethereum":'false'}
+currency = {"ba":'BTC',"vjcoin":'VJC',"ethereum":'ETH'}
 
 def init_page():
 	if 'logged_in' not in session:
 		session['logged_in'] = False
 	responses = get_alerts(app.config["db"])
 
-	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses, "logged_in":session['logged_in'], "cluster":canCluster[app.config["db_name"]] }
+	settings = {"db":app.config["db_name"],"limit":app.config["limit"], "alerts":responses, "logged_in":session['logged_in'], 
+	"cluster":canCluster[app.config["db_name"]], "currency": currency[app.config["db_name"]] }
 	return settings
 	
 
