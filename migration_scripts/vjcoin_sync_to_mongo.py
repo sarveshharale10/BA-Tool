@@ -5,6 +5,15 @@ from pymongo import MongoClient
 import requests
 from urllib.request import urlopen
 import ssl
+from urllib import request
+import ssl
+
+def get_html(url):
+	url="https://example.com/data.html"
+	context = ssl._create_unverified_context()
+	response = request.urlopen(url, context=context)
+	html = response.read()
+	return html
 
 def process_dfs(dfs):
 	block_list = []
@@ -23,7 +32,7 @@ def process_transaction_dfs(dfs):
 	return transaction_list,receivers_list
 
 def get_entire_chain():
-	dfs0 = pd.read_html('https://explore.vjti-bct.in/explorer', header=None, index_col=0)
+	dfs0 = pd.read_html(get_html('https://explore.vjti-bct.in/explorer'), header=None, index_col=0)
 	blocks,transactions = process_dfs(dfs0)
 
 	for i in range(1,72):
@@ -31,7 +40,7 @@ def get_entire_chain():
 					time.sleep(1)
 			print(i)
 			url = 'https://explore.vjti-bct.in/explorer?prev={}'.format(i)
-			dfs = pd.read_html(url, header=None, index_col=0)
+			dfs = pd.read_html(get_html(url), header=None, index_col=0)
 			temp_blocks,temp_transactions = process_dfs(dfs)
 			blocks = blocks + temp_blocks
 			transactions = transactions + temp_transactions
@@ -49,7 +58,7 @@ def get_entire_chain():
 					time.sleep(1)
 			print(index)
 			url = 'https://explore.vjti-bct.in/transaction/{}/{}'.format(row['Block Hash'],row['tx_hash'])
-			dfs = pd.read_html(url, header=None, index_col=0)
+			dfs = pd.read_html(get_html(url), header=None, index_col=0)
 			temp_transactions, temp_receivers = process_transaction_dfs(dfs)
 			receivers = receivers + temp_receivers
 			transactions = transactions + temp_transactions
@@ -89,14 +98,39 @@ def insert_df_mongo(self,df,block_height):
 			tx["inputs"].append(record)
 			transactions.insert_one(tx)
 
+def insert_df_mongo_no_class(df,block_height):
+	client = MongoClient("mongodb://localhost:27017")
+	ba = client["vjcoin"]
+	transactions = ba["transactions"]
+
+	for index, row in df.iterrows():
+		tx = {}
+		if (int(row['Block Number']) >= block_height):
+			tx["block_height"] = int(row['Block Number'])
+			tx["tx_hash"] = row['Transaction Hash']
+			tx["timestamp"] = int(row['Timestamp'])
+			tx["outputs"] = list()
+			tx["inputs"] = list()
+			record = {}
+			record["address"] = row['Receivers']
+			record["amount"] = row['Amount']
+			tx["outputs"].append(record)
+			record = {}
+			record["address"] = row['Sender Address']
+			record["amount"] = row['Amount']
+			tx["inputs"].append(record)
+			transactions.insert_one(tx)
+
 def get_response(url):
-		context = ssl._create_unverified_context()
-		i = 1
-		success = True
+	i = 1
+	context = ssl._create_unverified_context()
+	myURL = urlopen(url, context=context)
+	# html = response.read()
+	# return html
+
+	while(myURL.status != 200):
 		try:
-			myURL = urlopen(url,context=context)
-			if(myURL.getcode() == 200):
-				return myURL.read()
+			myURL = urlopen(url, context=context)
 		except:
 			print("Connection Reset")
 			time.sleep(1)
@@ -124,8 +158,9 @@ def sync_chain():
 	except:
 		block_height = -1
 	block_height += 1
-	response = requests.get('https://explore.vjti-bct.in/info')
-	chain_height = int(response.text.split('<br>')[0].split(':')[-1])
+	response = (get_response('https://explore.vjti-bct.in/info')).decode("utf-8") 
+	print(response)
+	chain_height = int(response.split('<br>')[0].split(':')[-1])
 	if (block_height < chain_height):
 		remaining_blocks = chain_height - block_height
 		num_iterations = int (remaining_blocks / 8)
@@ -176,7 +211,7 @@ def sync_chain():
 		df_transactions['Amount'] = df_receivers[0]
 		df_transactions['Timestamp'] = df_transactions['Timestamp'].str.split('(',expand=True)[1].str.split(')',expand=True)[0]
 
-		insert_df_mongo(df_transactions,block_height)
+		insert_df_mongo_no_class(df_transactions,block_height)
 
 if __name__ == "__main__":
 	sync_chain()

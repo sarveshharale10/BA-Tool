@@ -107,14 +107,14 @@
             padding: 1rem;
         }
 
-        .switching {
+        .switching-chart {
             position: relative;
             display: inline-block;
             width: 140px;
             height: 60px;
         }
 
-        .switching input {
+        .switching-chart input {
             opacity: 0;
             width: 0;
             height: 0;
@@ -200,6 +200,10 @@
 
         #myModal {
             z-index: 10000;
+        }
+        #holders-chart{
+            width: 340;
+            height: 440;
         }
     </style>
 
@@ -566,6 +570,12 @@
 
             });
 
+        }
+        if({{ config.cluster|safe }}){
+            
+            // $('.switching').css('display', 'block');
+        }else{
+            $('.switching').css('display', 'none');
         }
 
     </script>
