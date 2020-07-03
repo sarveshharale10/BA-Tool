@@ -2,10 +2,9 @@ import pandas as pd
 import time
 import os
 from pymongo import MongoClient
-from tqdm import tqdm
 import requests
 from urllib.request import urlopen
-
+import ssl
 
 def process_dfs(dfs):
 	block_list = []
@@ -91,19 +90,28 @@ def insert_df_mongo(self,df,block_height):
 			transactions.insert_one(tx)
 
 def get_response(url):
-	i = 1
-
-	while(response.status_code != 200):
+		context = ssl._create_unverified_context()
+		i = 1
+		success = True
 		try:
-			myURL = urlopen(url)
+			myURL = urlopen(url,context=context)
+			if(myURL.getcode() == 200):
+				return myURL.read()
 		except:
-			time.sleep(10)
-			
-		# response = requests.get(url)
-		i += 1
-		if i % 4 == 0:
+			print("Connection Reset")
 			time.sleep(1)
-	return myURL.read()
+
+		while(True):
+			try:
+				myURL = urlopen(url,context=context)
+				print(myURL.getcode())
+				if (myURL.getcode() == 200):
+					return myURL.read()
+			except(e):
+				print(e)
+				print("Connection Reset")
+				time.sleep(5)
+		return myURL.read()
 
 
 def sync_chain():

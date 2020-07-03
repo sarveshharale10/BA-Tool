@@ -6,9 +6,11 @@ import os
 import requests
 from datetime import datetime
 from urllib.request import urlopen
+import ssl
+from web3 import Web3
+from concurrent.futures import ProcessPoolExecutor
 
-
-class DBSnycer():
+class DBSyncer():
 	def sync_db(self):
 		pass
 
@@ -28,29 +30,68 @@ class DBSnycer():
 		for monitor in monitors:
 			if((monitor["type"] == "address" and monitor["value"] in addresses) or (monitor["type"] == "amount" and tx_volume >= float(monitor["value"]))):
 				db.monitors.update({"_id":monitor["_id"]},{"$push":{"alerts":{"tx_hash":tx["tx_hash"],"timestamp":datetime.now()}}})
-				print("Got Alert")
 
-class BtcDBSyncer(DBSnycer):
+	def update_statistics(self,tx,db):
+		for output in tx["outputs"]:
+			try:
+				current_value = db.top_receivers.find_one({"_id":output["address"]},{"_id":0,"value":1})["value"]
+				new_value = current_value + output["amount"]
+				db.top_receivers.update({"_id":output["address"]},{"$set":{"value":new_value}})
+			except:
+				new_value = output["amount"]
+				db.top_receivers.insert({"_id":output["address"],"value":new_value})
+
+			try:
+				current_value = db.top_holders.find_one({"_id":output["address"]},{"_id":0,"value":1})["value"]
+				new_value = current_value + output["amount"]
+				db.top_holders.update({"_id":output["address"]},{"$set":{"value":new_value}})
+			except:
+				new_value = output["amount"]
+				db.top_holders.insert({"_id":output["address"],"value":new_value})
+
+		for output in tx["inputs"]:
+			try:
+				current_value = db.top_senders.find_one({"_id":output["address"]},{"_id":0,"value":1})["value"]
+				new_value = current_value + output["amount"]
+				db.top_senders.update({"_id":output["address"]},{"$set":{"value":new_value}})
+			except:
+				new_value = output["amount"]
+				db.top_senders.insert({"_id":output["address"],"value":new_value})
+
+			try:
+				current_value = db.top_holders.find_one({"_id":output["address"]},{"_id":0,"value":1})["value"]
+				new_value = current_value - output["amount"]
+				db.top_holders.update({"_id":output["address"]},{"$set":{"value":new_value}})
+			except:
+				new_value = -output["amount"]
+				db.top_holders.insert({"_id":output["address"],"value":new_value})
+
+	def update_last_block(self,last_block,db):
+		db.config.update({},{"$set":{"last_block":last_block}})
+			
+
+class BtcDBSyncer(DBSyncer):
+	db_name = "ba"
 
 	def sync_db(self):
-		db = MongoClient("mongodb://localhost:27017")["ba"]
-
-		config = db["config"]
+		db = MongoClient("mongodb://localhost:27017")[self.db_name]
 
 		utxo = db["utxo"]
 		transactions = db["transactions"]
 
-		#get last block height
-		last_block = config.find({"name":"bitcoin"},{"_id":0,"last_block":1})
-
+		try:
+			config = db["config"]
+			last_block = config.find_one({"_id":0,"last_block":1})["last_block"]
+		except:
+			last_block = -1
+		next_block = last_block + 1
 		blocks_path = '/home/shared/bitcoin/blocks'
 		index_path = ""
 
 		blockchain = Blockchain(os.path.expanduser(blocks_path))
-		for block in blockchain.get_ordered_blocks(index_path,start=last_block + 1):
+		for block in blockchain.get_ordered_blocks(index_path,start=next_block):
 			for tx in block.transactions:
 				tx_hash = tx.hash
-				documents = []
 				for index,output in enumerate(tx.outputs):
 					try:
 						document = {
@@ -65,12 +106,10 @@ class BtcDBSyncer(DBSnycer):
 						f.write(e)
 						f.write("TX HASH" + str(tx_hash)+ '\n')
 						f.close()
-				utxo.insert_many(documents)
+					utxo.insert_one(document)
 
-		for block in blockchain.get_ordered_blocks(index_path,start=last_block + 1):
 			timestamp = block.header.timestamp
 
-			documents = []
 			for transaction in block.transactions:
 				tx_hash = transaction.hash
 				tx = {}
@@ -108,10 +147,60 @@ class BtcDBSyncer(DBSnycer):
 						except:
 							pass
 
-				documents.append(tx)
-			transactions.insert_many(documents)
+				transactions.insert_one(document)
+				self.check_for_alerts(document,db)
+				self.update_statistics(document,db)
 
-class VjCoinDbSyncer(DBSnycer):		
+			self.update_last_block(block.height,db)
+
+class EthDBSyncer(DBSyncer):
+	db_name = "ethereum"
+
+	def sync_db(self):
+		db = MongoClient("mongodb://localhost:27017")[self.db_name]
+		transactions = db["transactions"]
+
+		geth_ipc_path = "/media/sarvesh/HD-B1/sarvesh/BlockchainAnalysis/ethereum/geth.ipc"
+		w3 = Web3(Web3.IPCProvider(geth_ipc_path))
+
+		try:
+			last_block = int(db.config.find_one({},{"_id":0,"last_block":1})["last_block"])
+		except Exception as e:
+			print(e)
+			last_block = -1
+
+		next_block = last_block + 1
+		last_block = w3.eth.blockNumber
+		for i in range(next_block,last_block):
+			try:
+				block = w3.eth.getBlock(i)
+				print(f"block {i} found",end="\r")
+				timestamp = block.timestamp
+				txhashes = block.transactions
+				for txhash in txhashes:
+					transaction = dict(w3.eth.getTransaction(txhash.hex()))
+					tx_from = transaction["from"].lower()
+					tx_to = transaction["to"].lower()
+
+					if(len(tx_from) != 42 or len(tx_to) != 42 or len(transaction["input"]) != 2):
+						continue
+
+					doc = {}
+					doc["timestamp"] = timestamp
+					doc["tx_hash"] = transaction["hash"].hex()
+					total = (transaction["value"] + transaction["gas"] * transaction["gasPrice"]) / (10 ** 18)
+					doc["inputs"] = [{"address":tx_from,"amount":total}]
+					doc["outputs"] = [{"address":tx_to,"amount":transaction["value"] / (10 ** 18)}]
+					transactions.insert_one(doc)
+					self.check_for_alerts(doc,db)
+					self.update_statistics(doc,db)
+
+				self.update_last_block(i,db)
+				i += 1
+			except Exception as e:
+				print(e)
+
+class VjCoinDbSyncer(DBSyncer):		
 
 	def process_dfs(self,dfs):
 		block_list = []
@@ -148,7 +237,7 @@ class VjCoinDbSyncer(DBSnycer):
 		df_blocks.columns = dfs0[0].index
 		df_blocks['tx_hash']  = df_blocks.Transactions.str.split(' ',expand=True)[2]
 		df_blocks.drop_duplicates(keep="first")
-		print(df_blocks.columns)
+		#print(df_blocks.columns)
 		transactions = []
 		receivers = []
 		for index, row in df_blocks.iterrows():
@@ -163,7 +252,7 @@ class VjCoinDbSyncer(DBSnycer):
 
 		df_receivers = pd.DataFrame(receivers)
 		df_transactions = pd.DataFrame(transactions)
-		print(df_blocks.columns)
+		#print(df_blocks.columns)
 		df_transactions.columns = ['Transaction Hash','Block Hash','Timestamp','Sender Address','Message','Receivers']
 		df_transactions = pd.merge(df_transactions,df_blocks[['Block Hash', 'Block Number']],on='Block Hash')
 		df_transactions['Receivers'] = df_receivers[1]
@@ -197,27 +286,25 @@ class VjCoinDbSyncer(DBSnycer):
 				transactions.insert_one(tx)
 
 				self.check_for_alerts(tx,ba)
+				self.update_statistics(tx,ba)
+
 	def get_response(self,url):
 		i = 1
-		success = True
-		try:
-			myURL = urlopen(url)
-			if(myURL.getcode() == 200):
-				return myURL.read()
-		except:
-			print("Connection Reset")
-			time.sleep(1)
+		context = ssl._create_unverified_context()
+		myURL = urlopen(url, context=context)
+		# html = response.read()
+		# return html
 
-		while(True):
+		while(myURL.status != 200):
 			try:
-				myURL = urlopen(url)
-				print(myURL.getcode())
-				if (myURL.getcode() == 200):
-					return myURL.read()
-			except(e):
-				print(e)
-				print("Connection Reset")
-				time.sleep(5)
+				myURL = urlopen(url, context=context)
+			except:
+				time.sleep(10)
+				
+			# response = requests.get(url)
+			i += 1
+			if i % 4 == 0:
+				time.sleep(1)
 		return myURL.read()
 
 	def sync_db(self):
@@ -226,7 +313,7 @@ class VjCoinDbSyncer(DBSnycer):
 		transactions = ba["transactions"]
 		try:
 			block_height = transactions.find().sort("block_height",-1).limit(1)[0]["block_height"]
-			print (block_height)
+			#print (block_height)
 		except:
 			block_height = -1
 		block_height += 1
@@ -245,7 +332,7 @@ class VjCoinDbSyncer(DBSnycer):
 			for i in range(1,num_iterations):
 					if i % 4 == 0:
 							time.sleep(1)
-					print(i)
+					#print(i)
 					url = 'https://explore.vjti-bct.in/explorer?prev={}'.format(i)
 					response = self.get_response(url)
 					dfs = pd.read_html(response, header=None, index_col=0)
@@ -258,7 +345,7 @@ class VjCoinDbSyncer(DBSnycer):
 			df_blocks.columns = dfs0[0].index
 			df_blocks['tx_hash']  = df_blocks.Transactions.str.split(' ',expand=True)[2]
 			df_blocks.drop_duplicates(keep="first")
-			print(df_blocks.columns)
+			#print(df_blocks.columns)
 			transactions = []
 			receivers = []
 			for index, row in df_blocks.iterrows():
@@ -274,7 +361,7 @@ class VjCoinDbSyncer(DBSnycer):
 
 			df_receivers = pd.DataFrame(receivers)
 			df_transactions = pd.DataFrame(transactions)
-			print(df_blocks.columns)
+			#print(df_blocks.columns)
 			df_transactions.columns = ['Transaction Hash','Block Hash','Timestamp','Sender Address','Message','Receivers']
 			df_transactions = pd.merge(df_transactions,df_blocks[['Block Hash', 'Block Number']],on='Block Hash')
 			df_transactions['Receivers'] = df_receivers[1]
@@ -282,3 +369,13 @@ class VjCoinDbSyncer(DBSnycer):
 			df_transactions['Timestamp'] = df_transactions['Timestamp'].str.split('(',expand=True)[1].str.split(')',expand=True)[0]
 
 			self.insert_df_mongo(df_transactions,block_height)
+
+executor = ProcessPoolExecutor(max_workers = 3)
+
+if(__name__ == "__main__"):
+	syncer = VjCoinDbSyncer()
+	executor.submit(syncer.sync_db)
+	syncer = EthDBSyncer()
+	executor.submit(syncer.sync_db)
+	executor.shutdown(wait=True)
+	time.sleep(180 * 60)
