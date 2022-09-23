@@ -33,7 +33,7 @@ pandas==1.0.3
 parsimonious==0.8.1
 passlib==1.7.2
 plyvel==1.0.4
-protobuf==3.12.2
+protobuf==3.18.3
 pycryptodome==3.9.7
 pymongo==3.10.1
 pyrsistent==0.16.0
